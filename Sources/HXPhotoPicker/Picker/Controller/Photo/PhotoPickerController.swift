@@ -73,9 +73,7 @@ open class PhotoPickerController: UINavigationController {
     /// 刷新相册数据，只对单独控制器展示的有效
     public func reloadAlbumData() {
         if splitType.isSplit {
-            if let listView = albumViewController?.listView {
-                listView.reloadData()
-            }
+            albumViewController?.listView.reloadData()
         }else {
             if config.albumShowMode.isPopView {
                 pickerViewController?.reloadAlbumData()
@@ -177,7 +175,7 @@ open class PhotoPickerController: UINavigationController {
     /// 当前处于的外部预览
     public let previewType: PhotoPreviewType
     
-    open override var modalPresentationStyle: UIModalPresentationStyle {
+    public override var modalPresentationStyle: UIModalPresentationStyle {
         didSet {
             if previewType != .none && modalPresentationStyle == .custom && !splitType.isSplit {
                 transitioningDelegate = self
@@ -186,14 +184,14 @@ open class PhotoPickerController: UINavigationController {
         }
     }
     
-    open override var preferredStatusBarStyle: UIStatusBarStyle {
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
         if PhotoManager.isDark {
             return .lightContent
         }
         return config.statusBarStyle
     }
     
-    open override var prefersStatusBarHidden: Bool {
+    public override var prefersStatusBarHidden: Bool {
         if config.prefersStatusBarHidden {
             return true
         }else {
@@ -212,14 +210,14 @@ open class PhotoPickerController: UINavigationController {
         config.supportedInterfaceOrientations
     }
     
-    open override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+    public override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
         if let animation = topViewController?.preferredStatusBarUpdateAnimation {
             return animation
         }
         return .fade
     }
     
-    open override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         if PhotoManager.isRTL {
             navigationBar.semanticContentAttribute = .forceRightToLeft
@@ -241,7 +239,7 @@ open class PhotoPickerController: UINavigationController {
         setupInteractiveTransition()
     }
     
-    open override func viewDidLayoutSubviews() {
+    public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         let status = AssetPermissionsUtil.authorizationStatus
         if status.rawValue >= 1 && status.rawValue < 3 {
@@ -253,7 +251,7 @@ open class PhotoPickerController: UINavigationController {
         }
     }
     
-    open override func present(
+    public override func present(
         _ viewControllerToPresent: UIViewController,
         animated flag: Bool,
         completion: (() -> Void)? = nil
@@ -301,7 +299,7 @@ open class PhotoPickerController: UINavigationController {
         super.dismiss(animated: flag, completion: completion)
     }
     
-    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if #available(iOS 13.0, *) {
             if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
@@ -310,7 +308,7 @@ open class PhotoPickerController: UINavigationController {
         }
     }
     
-    open override func viewDidDisappear(_ animated: Bool) {
+    public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if previewType == .none && presentingViewController == nil {
             didDismiss()
@@ -534,48 +532,43 @@ extension PhotoPickerController {
         if modalPresentationStyle != .custom {
             setupBackgroundColor()
         }
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility {
-        }else {
-            let isDark = PhotoManager.isDark
-            let titleTextAttributes: [NSAttributedString.Key : Any] = [
-                .foregroundColor:
-                    isDark ? config.navigationTitleDarkColor : config.navigationTitleColor
-            ]
-            navigationBar.titleTextAttributes = titleTextAttributes
-            let tintColor = isDark ? config.navigationDarkTintColor : config.navigationTintColor
-            navigationBar.tintColor = tintColor
-            let barStyle = isDark ? config.navigationBarDarkStyle : config.navigationBarStyle
-            navigationBar.barStyle = barStyle
-            navigationBar.isTranslucent = config.navigationBarIsTranslucent
-            
-            let navigationBackgroundImage = isDark ? config.navigationBackgroundDarkImage : config.navigationBackgroundImage
-            let navigationBackgroundColor = isDark ? config.navigationBackgroundDarkColor : config.navigationBackgroundColor
+        let isDark = PhotoManager.isDark
+        let titleTextAttributes: [NSAttributedString.Key : Any] = [
+            .foregroundColor:
+                isDark ? config.navigationTitleDarkColor : config.navigationTitleColor
+        ]
+        navigationBar.titleTextAttributes = titleTextAttributes
+        let tintColor = isDark ? config.navigationDarkTintColor : config.navigationTintColor
+        navigationBar.tintColor = tintColor
+        let barStyle = isDark ? config.navigationBarDarkStyle : config.navigationBarStyle
+        navigationBar.barStyle = barStyle
+        navigationBar.isTranslucent = config.navigationBarIsTranslucent
+        
+        let navigationBackgroundImage = isDark ? config.navigationBackgroundDarkImage : config.navigationBackgroundImage
+        let navigationBackgroundColor = isDark ? config.navigationBackgroundDarkColor : config.navigationBackgroundColor
+        if let image = navigationBackgroundImage {
+            navigationBar.setBackgroundImage(image, for: .default)
+        }
+        if let color = navigationBackgroundColor {
+            navigationBar.backgroundColor = color
+        }
+        if #available(iOS 15.0, *), config.adaptiveBarAppearance {
+            let appearance = UINavigationBarAppearance()
+            appearance.titleTextAttributes = titleTextAttributes
+            switch barStyle {
+            case .`default`:
+                appearance.backgroundEffect = UIBlurEffect(style: .extraLight)
+            default:
+                appearance.backgroundEffect = UIBlurEffect(style: .dark)
+            }
             if let image = navigationBackgroundImage {
-                navigationBar.setBackgroundImage(image, for: .default)
+                appearance.backgroundImage = image
             }
             if let color = navigationBackgroundColor {
-                navigationBar.backgroundColor = color
+                appearance.backgroundColor = color
             }
-            if #available(iOS 15.0, *), config.adaptiveBarAppearance {
-                let appearance = UINavigationBarAppearance()
-                appearance.titleTextAttributes = titleTextAttributes
-                switch barStyle {
-                case .`default`:
-                    appearance.backgroundEffect = UIBlurEffect(style: .extraLight)
-                default:
-                    appearance.backgroundEffect = UIBlurEffect(style: .dark)
-                }
-                if let image = navigationBackgroundImage {
-                    appearance.backgroundImage = image
-                }
-                if let color = navigationBackgroundColor {
-                    appearance.backgroundColor = color
-                }
-                navigationBar.standardAppearance = appearance
-                navigationBar.scrollEdgeAppearance = appearance
-                navigationBar.compactAppearance = appearance
-                navigationBar.compactScrollEdgeAppearance = appearance
-            }
+            navigationBar.standardAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
         }
     }
     

@@ -692,9 +692,10 @@ extension EditorViewController: EditorToolsViewDelegate {
         }
     }
     
-    func presentText(_ text: EditorStickerText? = nil) {
+    func presentText(_ text: EditorStickerText? = nil, _ ID: String = "") {
         let textVC = EditorStickerTextViewController(config: config.text, stickerText: text)
         textVC.delegate = self
+        textVC.ID = ID
         let nav = EditorStickerTextController(rootViewController: textVC)
         nav.modalPresentationStyle = config.text.modalPresentationStyle
         present(nav, animated: true, completion: nil)

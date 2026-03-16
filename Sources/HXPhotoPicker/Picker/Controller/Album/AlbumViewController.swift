@@ -41,7 +41,6 @@ public class AlbumViewController: PhotoBaseViewController, PhotoAlbumListDelegat
         initTitleView()
         initItems()
         updateColors()
-        initTopContainerView(listView.scrollView)
     }
     
     public override func updateColors() {
@@ -72,20 +71,17 @@ public class AlbumViewController: PhotoBaseViewController, PhotoAlbumListDelegat
     }
     
     private func initTitleView() {
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility {
+        if UIDevice.isPortrait {
+            navigationItem.titleView = titleLabel
         }else {
-            if UIDevice.isPortrait {
-                navigationItem.titleView = titleLabel
-            }else {
-                if splitViewController != nil {
-                    if #unavailable(iOS 14.5) {
-                        navigationItem.titleView = titleLabel
-                    }else {
-                        navigationItem.titleView = nil
-                    }
-                }else {
+            if splitViewController != nil {
+                if #unavailable(iOS 14.5) {
                     navigationItem.titleView = titleLabel
+                }else {
+                    navigationItem.titleView = nil
                 }
+            }else {
+                navigationItem.titleView = titleLabel
             }
         }
     }
@@ -107,12 +103,8 @@ public class AlbumViewController: PhotoBaseViewController, PhotoAlbumListDelegat
                 rightItems.append(.initCustomView(customView: view))
             }
         }
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility {
-            title = .textManager.picker.albumList.navigationTitle.text
-        }else {
-            if let titleLabel = titleLabel {
-                titleLabel.text = .textManager.picker.albumList.navigationTitle.text
-            }
+        if let titleLabel = titleLabel {
+            titleLabel.text = .textManager.picker.albumList.navigationTitle.text
         }
         if UIDevice.isPad {
             if !pickerController.splitType.isSplit {
@@ -198,16 +190,14 @@ public class AlbumViewController: PhotoBaseViewController, PhotoAlbumListDelegat
     var isDidLayoutViews: Bool = false
     
     private func changeSubviewFrame() {
-        if let titleLabel {
-            var titleWidth: CGFloat = 0
-            if let labelWidth = titleLabel.text?.width(ofFont: titleLabel.font, maxHeight: 30) {
-                titleWidth = labelWidth
-            }
-            if titleWidth > view.width * 0.6 {
-                titleWidth = view.width * 0.6
-            }
-            titleLabel.size = CGSize(width: titleWidth, height: 30)
+        var titleWidth: CGFloat = 0
+        if let labelWidth = titleLabel.text?.width(ofFont: titleLabel.font, maxHeight: 30) {
+            titleWidth = labelWidth
         }
+        if titleWidth > view.width * 0.6 {
+            titleWidth = view.width * 0.6
+        }
+        titleLabel.size = CGSize(width: titleWidth, height: 30)
         let margin: CGFloat = UIDevice.leftMargin
         let tableWidth: CGFloat
         if splitViewController != nil, !UIDevice.isPortrait, !UIDevice.isPad {
@@ -216,10 +206,6 @@ public class AlbumViewController: PhotoBaseViewController, PhotoAlbumListDelegat
             tableWidth = view.width - 2 * margin
         }
         listView.frame = CGRect(x: margin, y: 0, width: tableWidth, height: view.height)
-        if let topContainerView {
-            let topY = navigationController?.navigationBar.frame.maxY ?? 0
-            topContainerView.frame = .init(x: 0, y: 0, width: tableWidth, height: topY)
-        }
         if let nav = navigationController {
             listView.contentInset = UIEdgeInsets(
                 top: nav.navigationBar.frame.maxY,

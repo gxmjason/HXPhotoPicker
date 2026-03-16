@@ -176,11 +176,6 @@ class PickerTransition: NSObject, UIViewControllerAnimatedTransitioning {
             UIView.animate(withDuration: alphaDuration) {
                 previewVC.photoToolbar.alpha = 1
                 previewVC.navBgView?.alpha = 1
-                
-                if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility  {
-                    pickerVC.photoToolbar?.alpha = 0
-                    pickerVC.bottomContainerView?.alpha = 0
-                }
             }
             
             UIView.animate(
@@ -194,7 +189,7 @@ class PickerTransition: NSObject, UIViewControllerAnimatedTransitioning {
                 pickerVC.pickerController.pickerDelegate?
                     .pickerController(pickerVC.pickerController, animateTransition: .push)
             } completion: { _ in
-                pickerVC.photoToolbar?.mask = nil
+                pickerVC.photoToolbar.mask = nil
                 previewVC.photoToolbar.mask = nil
                 previewVC.isTransitioning = false
                 if let requestID = self.requestID {
@@ -208,8 +203,7 @@ class PickerTransition: NSObject, UIViewControllerAnimatedTransitioning {
                 self.pushImageView.removeFromSuperview()
                 contentView.removeFromSuperview()
                 transitionContext.completeTransition(true)
-                pickerVC.photoToolbar?.alpha = 1
-                pickerVC.bottomContainerView?.alpha = 1
+                pickerVC.photoToolbar.alpha = 1
             }
         }
         if let networkImage = photoAsset?.networkImageAsset {
@@ -350,11 +344,6 @@ class PickerTransition: NSObject, UIViewControllerAnimatedTransitioning {
             UIView.animate(withDuration: duration - 0.15) {
                 contentView.backgroundColor = backgroundColor.withAlphaComponent(0)
             }
-            
-            if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility  {
-                pickerVC.titleView?.alpha = 0
-            }
-            
             if previewVC.photoToolbar.mask != nil {
                 UIView.animate(withDuration: duration - 0.2, delay: 0, options: [.curveLinear]) {
                     previewVC.photoToolbar.mask?.frame = CGRect(
@@ -369,23 +358,11 @@ class PickerTransition: NSObject, UIViewControllerAnimatedTransitioning {
                 UIView.animate(withDuration: duration - 0.15, delay: 0.125, options: []) {
                     previewVC.photoToolbar.alpha = 0
                     previewVC.navBgView?.alpha = 0
-                    if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility  {
-                        pickerVC.titleView?.alpha = 1
-                    }
                 }
             }else {
-                if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility  {
-                    pickerVC.photoToolbar?.alpha = 0
-                    pickerVC.bottomContainerView?.alpha = 0
-                }
                 UIView.animate(withDuration: duration) {
                     previewVC.photoToolbar.alpha = 0
                     previewVC.navBgView?.alpha = 0
-                    if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility  {
-                        pickerVC.photoToolbar?.alpha = 1
-                        pickerVC.bottomContainerView?.alpha = 1
-                        pickerVC.titleView?.alpha = 1
-                    }
                 }
             }
             UIView.animate(

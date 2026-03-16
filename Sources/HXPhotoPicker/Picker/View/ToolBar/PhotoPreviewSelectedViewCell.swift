@@ -60,10 +60,6 @@ open class PhotoPreviewSelectedViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility  {
-            layer.cornerRadius = 8
-            layer.masksToBounds = true
-        }
         
         photoView = PhotoThumbnailView()
         photoView.imageView.size = size

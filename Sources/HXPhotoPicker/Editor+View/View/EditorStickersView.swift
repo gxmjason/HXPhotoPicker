@@ -67,6 +67,10 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
     }
     var isShowTrash: Bool = true
     var angle: CGFloat = 0
+    //重要：自定义字幕
+    var isAddWordSet: Bool = false
+    var toSetBeginTime: Double = 0.0 //显示开始时刻
+    var toSetTimeDuration: Double = 1.0//显示时长（至少1秒）
     
     private var trashView: EditorStickersTrashView!
     private var trashViewDidRemove: Bool = false
@@ -326,6 +330,16 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
                 itemView.center = convert(keyWindow.center, from: keyWindow)
             }
         }
+        if isAddWordSet { //是在添加字幕时
+            if let superv = superview {
+                itemView.centerX = superv.width * 0.5
+                itemView.y = superv.height - 80
+                itemView.showBeginTime = toSetBeginTime
+                itemView.showTimeDuration = toSetTimeDuration
+                itemView.item.showBeginTime = toSetBeginTime
+                itemView.item.showTimeDuration = toSetTimeDuration
+            }
+        }
         itemView.firstTouch = isSelected
         addSubview(itemView)
         itemView.update(pinchScale: pScale / self.scale, rotation: radians)
@@ -375,9 +389,34 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         selectView?.update(item: item)
     }
     
-    func update(text: EditorStickerText) {
+    @discardableResult
+    func update(text: EditorStickerText , _ ID: String = "") -> EditorStickersItemBaseView {
         isVideoMark = false
+        
+        var findView: EditorStickersItemView = (self.subviews.last as! EditorStickersItemView)
+        var find = false
+        if ID.count > 0 {
+            for itemView in self.subviews {
+                if itemView.isKind(of: EditorStickersItemView.self) {
+                    let sticker = itemView as! EditorStickersItemView
+                    if sticker.item.ID == ID {
+                        findView = itemView as! EditorStickersItemView
+                        find = true
+                        break
+                    }
+                }
+            }
+        }
+        if find {
+            selectView = findView
+        }else {
+            if let selectView = selectView {
+                findView = selectView
+            }
+        }
         selectView?.update(text: text)
+        
+        return findView
     }
     
     func startDragging(_ itemView: EditorStickersItemView) {

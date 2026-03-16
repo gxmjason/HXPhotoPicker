@@ -14,7 +14,7 @@ protocol EditorStickerTextViewControllerDelegate: AnyObject {
     )
     func stickerTextViewController(
         _ controller: EditorStickerTextViewController,
-        didFinishUpdate stickerText: EditorStickerText
+        didFinishUpdate stickerText: EditorStickerText, ID: String
     )
 }
 
@@ -35,6 +35,7 @@ final class EditorStickerTextViewController: HXBaseViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    public var ID: String?
     private var bgView: UIVisualEffectView!
     private var cancelButton: UIButton!
     private var finishButton: UIButton!
@@ -114,13 +115,14 @@ final class EditorStickerTextViewController: HXBaseViewController {
                 showBackgroud: textView.showBackgroudColor
             )
             if self.stickerText != nil {
-                delegate?.stickerTextViewController(self, didFinishUpdate: stickerText)
+                delegate?.stickerTextViewController(self, didFinishUpdate: stickerText, ID: self.ID ?? "")
             }else {
                 delegate?.stickerTextViewController(self, didFinish: stickerText)
             }
         }
         textView.textView.resignFirstResponder()
         dismiss(animated: true, completion: nil)
+        UserDefaults.standard.set(textView.config.font.pointSize, forKey: "KEY_Edit_Add_words_Font_Size")
     }
     
     override func viewWillAppear(_ animated: Bool) {

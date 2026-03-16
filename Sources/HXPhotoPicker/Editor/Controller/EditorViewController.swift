@@ -94,6 +94,8 @@ open class EditorViewController: HXBaseViewController {
     
     var backgroundInsetRect: CGRect = .zero
     
+    var isAddWordSet: Bool = false
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         imageFilterQueue = OperationQueue()
@@ -1350,6 +1352,20 @@ open class EditorViewController: HXBaseViewController {
     
     deinit {
         removeVideo()
+    }
+    
+    
+    //给子类调用
+    public func noticeStickerTextViewControllerDidFinish(sticker: EditorStickersItemBaseView) {
+        
+    }
+    //给子类调用
+    public func noticeStickerTextViewControllerDidUpdate(sticker: EditorStickersItemBaseView) {
+        
+    }
+    //给子类调用
+    public func noticeStickerTextViewControllerDidDelete(sticker: EditorStickersItemBaseView) {
+        
     }
 }
 

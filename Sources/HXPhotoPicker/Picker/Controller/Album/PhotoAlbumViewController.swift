@@ -9,7 +9,7 @@
 import UIKit
 import Photos
 
-public class PhotoAlbumViewController: HXBaseViewController, PhotoAlbumController {
+public class PhotoAlbumViewController: UIViewController, PhotoAlbumController {
     
     public weak var delegate: PhotoAlbumControllerDelegate?
     public var assetCollections: [PhotoAssetCollection] = []
@@ -33,10 +33,12 @@ public class PhotoAlbumViewController: HXBaseViewController, PhotoAlbumControlle
         }else {
             title = .textManager.picker.albumList.navigationTitle.text
         }
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility {
-        }else {
-            navigationController?.navigationBar.isTranslucent = config.navigationBarIsTranslucent
-        }
+        navigationController?.navigationBar.isTranslucent = config.navigationBarIsTranslucent
+//        if #available(iOS 11.0, *) {
+//            navigationItem.backButtonTitle = ""
+//        }else {
+//            navigationItem.backBarButtonItem = .init(title: "", style: .plain, target: self, action: #selector(didBackClick))
+//        }
         initItems()
         tableView = HXTableView(frame: .zero, style: .grouped)
         tableView.dataSource = self
@@ -59,8 +61,6 @@ public class PhotoAlbumViewController: HXBaseViewController, PhotoAlbumControlle
         }
         reloadData()
         updateColors()
-        
-        initTopContainerView(tableView)
     }
     
     func initItems() {
@@ -79,6 +79,11 @@ public class PhotoAlbumViewController: HXBaseViewController, PhotoAlbumControlle
         navigationItem.leftBarButtonItems = leftItems
         navigationItem.rightBarButtonItems = rightItems
     }
+    
+//    @objc
+//    func didBackClick() {
+//        navigationController?.popViewController(animated: true)
+//    }
     
     public func reloadData() {
         datas = []
@@ -101,9 +106,7 @@ public class PhotoAlbumViewController: HXBaseViewController, PhotoAlbumControlle
         if !systemAlbums.isEmpty {
             datas.append(.init(title: .textManager.picker.albumList.mediaSectionTitle.text, assetCollections: systemAlbums))
         }
-        if let tableView {
-            tableView.reloadData()
-        }
+        tableView.reloadData()
     }
     
     func updateColors() {
@@ -113,33 +116,29 @@ public class PhotoAlbumViewController: HXBaseViewController, PhotoAlbumControlle
             }
         }
         let isDark = PhotoManager.isDark
+        let titleTextAttributes: [NSAttributedString.Key : Any] = [
+            .foregroundColor:
+                isDark ? config.navigationTitleDarkColor : config.navigationTitleColor,
+            .font: UIFont.semiboldPingFang(ofSize: 18)
+        ]
         view.backgroundColor = isDark ? config.albumController.backgroundDarkColor : config.albumController.backgroundColor
         tableView.backgroundColor = view.backgroundColor
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility {
-        }else {
-            let titleTextAttributes: [NSAttributedString.Key : Any] = [
-                .foregroundColor:
-                    isDark ? config.navigationTitleDarkColor : config.navigationTitleColor,
-                .font: UIFont.semiboldPingFang(ofSize: 18)
-            ]
-            navigationController?.navigationBar.tintColor = isDark ? config.navigationDarkTintColor: config.navigationTintColor
-            navigationController?.navigationBar.titleTextAttributes = titleTextAttributes
-            let barStyle = isDark ? config.navigationBarDarkStyle : config.navigationBarStyle
-            navigationController?.navigationBar.barStyle = barStyle
-            
-            if #available(iOS 15.0, *) {
-                let appearance = UINavigationBarAppearance()
-                appearance.titleTextAttributes = titleTextAttributes
-                switch barStyle {
-                case .`default`:
-                    appearance.backgroundEffect = UIBlurEffect(style: .extraLight)
-                default:
-                    appearance.backgroundEffect = UIBlurEffect(style: .dark)
-                }
-                navigationController?.navigationBar.standardAppearance = appearance
-                navigationController?.navigationBar.compactAppearance = appearance
-                navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.tintColor = isDark ? config.navigationDarkTintColor: config.navigationTintColor
+        navigationController?.navigationBar.titleTextAttributes = titleTextAttributes
+        let barStyle = isDark ? config.navigationBarDarkStyle : config.navigationBarStyle
+        navigationController?.navigationBar.barStyle = barStyle
+        
+        if #available(iOS 15.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.titleTextAttributes = titleTextAttributes
+            switch barStyle {
+            case .`default`:
+                appearance.backgroundEffect = UIBlurEffect(style: .extraLight)
+            default:
+                appearance.backgroundEffect = UIBlurEffect(style: .dark)
             }
+            navigationController?.navigationBar.standardAppearance = appearance
+            navigationController?.navigationBar.scrollEdgeAppearance = appearance
         }
     }
     
@@ -150,9 +149,6 @@ public class PhotoAlbumViewController: HXBaseViewController, PhotoAlbumControlle
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         delegate?.albumController(didAppear: self)
-        if #available(iOS 26.0, *) {
-            navigationController?.navigationBar.setNeedsUpdateProperties()
-        }
     }
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -166,10 +162,6 @@ public class PhotoAlbumViewController: HXBaseViewController, PhotoAlbumControlle
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         tableView.frame = view.bounds
-        if let topContainerView {
-            let topY = navigationController?.navigationBar.frame.maxY ?? 0
-            topContainerView.frame = .init(x: 0, y: 0, width: tableView.width, height: topY)
-        }
     }
     
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

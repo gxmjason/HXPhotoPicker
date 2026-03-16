@@ -21,11 +21,16 @@ protocol EditorVideoControlViewDelegate: AnyObject {
     func controlView(_ controlView: EditorVideoControlView, endScrollAt time: CMTime)
 }
 
+protocol EditorVideoControlViewDelegate2: AnyObject {
+    func controlView(_ controlView: EditorVideoControlView, didPlayingTimeAt time: CMTime)
+}
+
 // swiftlint:disable type_body_length
 class EditorVideoControlView: UIView {
     // swiftlint:enable type_body_length
     
     weak var delegate: EditorVideoControlViewDelegate?
+    weak var delegate2: EditorVideoControlViewDelegate?
     let config: EditorConfiguration.Video.CropTime
     
     private var playView: UIVisualEffectView!

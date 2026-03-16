@@ -525,9 +525,10 @@ public extension EditorView {
     /// Update text texture
     /// 更新文字贴图
     func updateSticker(
-        _ text: EditorStickerText
-    ) {
-        adjusterView.updateSticker(text)
+        _ text: EditorStickerText,
+        _ ID: String
+    ) -> EditorStickersItemBaseView  {
+        adjusterView.updateSticker(text,ID)
     }
     
     /// Cancel the currently selected sticker

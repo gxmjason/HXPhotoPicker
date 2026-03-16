@@ -691,9 +691,9 @@ extension PhotoToolBarView {
         tintColor = isDark ? config.barTintDarkColor : config.barTintColor
         let style: UIBlurEffect.Style = {
             if isDark {
-                return config.barDarkStyle == .default ? .extraLight : .dark
+                return config.barDarkStyle == .default ? .light : .dark
             } else {
-                return config.barStyle == .default ? .extraLight : .dark
+                return config.barStyle == .default ? .light : .dark
             }
         }()
         backgroundView.effect = UIBlurEffect(style: style)

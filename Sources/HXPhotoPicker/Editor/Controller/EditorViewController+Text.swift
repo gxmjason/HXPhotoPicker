@@ -18,22 +18,21 @@ extension EditorViewController: EditorStickerTextViewControllerDelegate {
             selectedTool = nil
             updateBottomMaskLayer()
         }
-        editorView.addSticker(stickerText)
+        let stickerBaseView = editorView.addSticker(stickerText)
         checkSelectedTool()
         checkFinishButtonState()
+        noticeStickerTextViewControllerDidFinish(sticker: stickerBaseView)
     }
     
-    func stickerTextViewController(
-        _ controller: EditorStickerTextViewController,
-        didFinishUpdate stickerText: EditorStickerText
-    ) {
+    func stickerTextViewController(_ controller: EditorStickerTextViewController, didFinishUpdate stickerText: EditorStickerText, ID: String) {
         deselectedDrawTool()
         if let tool = selectedTool,
            tool.type == .graffiti || tool.type == .graffiti {
             selectedTool = nil
             updateBottomMaskLayer()
         }
-        editorView.updateSticker(stickerText)
+        let stickerBaseView = editorView.updateSticker(stickerText, ID)
         checkSelectedTool()
+        noticeStickerTextViewControllerDidUpdate(sticker: stickerBaseView)
     }
 }

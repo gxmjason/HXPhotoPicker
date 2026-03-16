@@ -61,8 +61,6 @@ open class PhotoAssetCollection: Equatable {
     /// - Parameter completion: 会回调多次
     /// - Returns: 请求ID
     open func requestCoverImage(
-        targetWidth: CGFloat? = nil,
-        isFit: Bool = false,
         completion: ((UIImage?, PhotoAssetCollection, [AnyHashable: Any]?) -> Void)?
     ) -> PHImageRequestID? {
         if realCoverImage != nil {
@@ -70,35 +68,16 @@ open class PhotoAssetCollection: Equatable {
             return nil
         }
         if let result = result, result.count > 0 {
-            let _targetWidth: CGFloat
-            if let targetWidth {
-                _targetWidth = targetWidth
+            let targetWidth: CGFloat
+            if UIDevice.isPad {
+                targetWidth = 300
             }else {
-                if UIDevice.isPad {
-                    _targetWidth = 300
-                }else {
-                    _targetWidth = min(UIScreen._width, UIScreen._height)
-                }
+                targetWidth = min(UIScreen._width, UIScreen._height)
             }
             let asset = result.object(at: result.count - 1)
-            var cropRect: CGRect?
-            if isFit {
-                let w = CGFloat(asset.pixelWidth)
-                let h = CGFloat(asset.pixelHeight)
-                var crop = CGRect(x: 0, y: 0, width: 1, height: 1)
-                if w > h {
-                    let x = (1 - h / w) / 2
-                    crop = CGRect(x: x, y: 0, width: h / w, height: 1)
-                } else if h > w {
-                    let y = (1 - w / h) / 2
-                    crop = CGRect(x: 0, y: y, width: 1, height: w / h)
-                }
-                cropRect = crop
-            }
             return AssetManager.requestThumbnailImage(
                 for: asset,
-                targetWidth: _targetWidth,
-                cropRect: cropRect
+                targetWidth: targetWidth
             ) {
                 completion?($0, self, $1)
             }

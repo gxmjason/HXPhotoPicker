@@ -119,21 +119,11 @@ extension PhotoPreviewViewController: UICollectionViewDelegate {
         if let photoAsset = photoAsset(for: currentIndex) {
             if previewType != .browser {
                 if photoAsset.mediaType == .video && pickerConfig.isSingleVideo {
-                    if #available(iOS 16.0, *) {
-                        selectBoxItem.isHidden = true
-                        selectBoxItem.isEnabled = false
-                    } else {
-                        selectBoxControl.isHidden = true
-                        selectBoxControl.isEnabled = false
-                    }
+                    selectBoxControl.isHidden = true
+                    selectBoxControl.isEnabled = false
                 }else {
-                    if #available(iOS 16.0, *) {
-                        selectBoxItem.isHidden = false
-                        selectBoxItem.isEnabled = true
-                    } else {
-                        selectBoxControl.isHidden = false
-                        selectBoxControl.isEnabled = true
-                    }
+                    selectBoxControl.isHidden = false
+                    selectBoxControl.isEnabled = true
                     updateSelectBox(photoAsset.isSelected, photoAsset: photoAsset)
                     selectBoxControl.isSelected = photoAsset.isSelected
                 }

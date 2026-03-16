@@ -37,9 +37,7 @@ public class PhotoBrowserInteractiveAnimator: PhotoBrowserInteractiveTransition,
     
     public override func startInteractiveTransition(_ transitionContext: UIViewControllerContextTransitioning) {
         guard canTransition,
-              // 确保 当前转场的 起始vc 是 拾取器vc
               let pickerController = transitionContext.viewController(forKey: .from) as? PhotoPickerController,
-              // 确保 拾取器vc 有一个 预览vc
               let previewViewController = pickerController.previewViewController else {
             canInteration = false
             cancel()
@@ -47,91 +45,46 @@ public class PhotoBrowserInteractiveAnimator: PhotoBrowserInteractiveTransition,
             self.transitionContext = nil
             return
         }
-        
-        // 记录 拾取器vc 的背景色
         backgroundColor = pickerController.view.backgroundColor
-        // 把 拾取器vc背景色 置为 无色
         pickerController.view.backgroundColor = .clear
-        
-        // 获取 预览vc
         self.previewViewController = previewViewController
-        // 记录 预览vc 的背景色
         previewBackgroundColor = previewViewController.view.backgroundColor
-        // 把 预览vc背景色 置为 无色
         previewViewController.view.backgroundColor = .clear
-        // 预览vc 设为 正在转场
-        previewViewController.isTransitioning = true
-        
-        // 获取 转场的 容器view
         let containerView = transitionContext.containerView
-        
-        // 下面的代码是插入一个 背景view，并且 bgview 的背景色为 预览vc 的背景色
-        // 但问题是，为什么用 addSubview? 不怕它插在最上面了吗？
         backgroundView.frame = containerView.bounds
         backgroundView.backgroundColor = previewBackgroundColor
-        
-        // 转场容器 添加 自定义背景view
         containerView.addSubview(backgroundView)
-        
-        // 获取 目标view
-        // 然后记录给 toView
-        // 这里很重要，因为最终要落到 toView 上，这个 view 是“落点”
         if let view = pickerController.pickerDelegate?.pickerController(
             pickerController,
             dismissPreviewViewForIndexAt: previewViewController.currentPreviewIndex) {
             toView = view
         }
         
-        // 获取 预览view
-        // 然后记录给 previewView——就是当前正在查看的 view
         if let previewCell = previewViewController.transitionCellView {
-            // 开始手势，要把它的子视图都给隐藏
             previewCell.hideScrollContainerSubview()
-            // 记录 当前预览view 的 frame——用于恢复
             beforePreviewFrame = previewCell.frame
             previewView = previewCell
         }
-        
-        // 不让 当前预览view 切边了——恢复时要切边
         previewView?.scrollView.clipsToBounds = false
         
-        // 如果有 预览view
         if let previewView = previewView {
-            // 生成目标锚点
             let anchorPoint = CGPoint(x: beganPoint.x / previewView.width, y: beganPoint.y / previewView.height)
-            // 赋值给 预览view
             previewView.layer.anchorPoint = anchorPoint
-            // 把预览view 的 frame 置为 拾取器vc 的宽高
             previewView.frame = pickerController.view.bounds
-            
-            // 记录 预览view 的中心点——用于恢复？
             previewCenter = previewView.center
-            // 转场容器 添加 预览view
             containerView.addSubview(previewView)
         }
-        
-        // 转场容器添加 拾取器vc 的 视图
         containerView.addSubview(pickerController.view)
-        
-        // 禁用 预览vc 和 预览小view 的触摸事件
         previewViewController.collectionView.isScrollEnabled = false
         previewView?.scrollView.isScrollEnabled = false
         previewView?.scrollView.pinchGestureRecognizer?.isEnabled = false
-        
-        // 如果 拾取器vc 是一个 图片浏览器
         if let photoBrowser = pickerController as? PhotoBrowser {
-            // 如果 图片浏览器 需要隐藏源视图
-            //                 👇这是个配置项，由最外层控制
             if photoBrowser.hideSourceView {
-                // 隐藏 目标View
                 toView?.isHidden = true
             }
         }else {
-            // 非 图片浏览器的场景
-            // 都隐藏 目标view
             toView?.isHidden = true
         }
-        
         self.transitionContext = transitionContext
     }
     
@@ -157,13 +110,10 @@ public class PhotoBrowserInteractiveAnimator: PhotoBrowserInteractiveTransition,
         switch gestureRecognizer.state {
         case .began:
             interationBegan(gestureRecognizer)
-            
         case .changed:
             interationChanged(gestureRecognizer, isTracking: factor.isTracking)
-            
         case .ended, .cancelled, .failed:
             interationEnded(gestureRecognizer)
-            
         default:
             break
         }
@@ -179,10 +129,10 @@ public class PhotoBrowserInteractiveAnimator: PhotoBrowserInteractiveTransition,
            let contentView = cell.scrollContainerView {
             let toRect = contentView.convert(contentView.bounds, to: cell.scrollView)
             if  (cell.scrollView.isZooming ||
-                 cell.scrollView.isZoomBouncing ||
-                 cell.scrollView.contentOffset.y > 0 ||
-                 !cell.allowInteration ||
-                 (toRect.minX != 0 && contentView.width > cell.scrollView.width)) && !canInteration {
+                    cell.scrollView.isZoomBouncing ||
+                    cell.scrollView.contentOffset.y > 0 ||
+                    !cell.allowInteration ||
+                    (toRect.minX != 0 && contentView.width > cell.scrollView.width)) && !canInteration {
                 return (false, isTracking)
             }else {
                 isTracking = cell.scrollView.isTracking
@@ -203,20 +153,17 @@ public class PhotoBrowserInteractiveAnimator: PhotoBrowserInteractiveTransition,
         beganPoint = gestureRecognizer.location(in: gestureRecognizer.view)
         canInteration = true
         canTransition = true
-        
         pickerController.dismiss(animated: true, completion: nil)
     }
     
     func interationChanged(_ gestureRecognizer: UIPanGestureRecognizer, isTracking: Bool) {
-        
         if !canInteration || transitionContext == nil {
             if isTracking {
-                interationBegan(gestureRecognizer)
+                interationBegan(gestureRecognizer) 
                 if canInteration {
                     slidingGap = gestureRecognizer.translation(in: gestureRecognizer.view)
                 }
             }
-            
             return
         }
         guard let pickerController,
@@ -224,36 +171,28 @@ public class PhotoBrowserInteractiveAnimator: PhotoBrowserInteractiveTransition,
               let previewView else {
             return
         }
-        
         let translation = gestureRecognizer.translation(in: gestureRecognizer.view)
-        
         var scale = (translation.y - slidingGap.y) / (previewViewController.view.height)
         if scale > 1 {
             scale = 1
         }else if scale < 0 {
             scale = 0
         }
-        
         var previewViewScale = 1 - scale
         if previewViewScale < 0.4 {
             previewViewScale = 0.4
         }
-        
-        let previewCentre = CGPoint(
+        previewView.center = CGPoint(
             x: previewCenter.x + (translation.x - slidingGap.x),
             y: previewCenter.y + (translation.y - slidingGap.y)
         )
-        
-        previewView.center = previewCentre
         previewView.transform = CGAffineTransform.init(scaleX: previewViewScale, y: previewViewScale)
         
         var alpha = 1 - scale * 2
         if alpha < 0 {
             alpha = 0
         }
-        
         backgroundView.alpha = alpha
-        
         if !previewViewController.statusBarShouldBeHidden {
             var bottomViewAlpha = 1 - scale * 1.5
             if bottomViewAlpha < 0 {
@@ -266,7 +205,6 @@ public class PhotoBrowserInteractiveAnimator: PhotoBrowserInteractiveTransition,
         }
         pickerController.pickerDelegate?
             .pickerController(pickerController, interPercentUpdate: alpha, type: .dismiss)
-        
         update(1 - alpha)
     }
     
@@ -327,7 +265,6 @@ public class PhotoBrowserInteractiveAnimator: PhotoBrowserInteractiveTransition,
                     .pickerController(picker, interPercentDidCancelAnimation: .dismiss)
             }
         } completion: { _ in
-            previewViewController.isTransitioning = false
             previewViewController.photoToolbar.mask = nil
             toVC?.photoToolbar.mask = nil
             self.toView?.isHidden = false
@@ -369,7 +306,7 @@ public class PhotoBrowserInteractiveAnimator: PhotoBrowserInteractiveTransition,
             pickerController,
             dismissPreviewFrameForIndexAt:
                 previewViewController.currentPreviewIndex
-           ) {
+        ) {
             toRect = rect
         }
         if let toView = toView, toView.layer.cornerRadius > 0 {
@@ -411,7 +348,6 @@ public class PhotoBrowserInteractiveAnimator: PhotoBrowserInteractiveTransition,
             pickerController.pickerDelegate?
                 .pickerController(pickerController, interPercentDidFinishAnimation: .dismiss)
         } completion: { _ in
-            previewViewController.isTransitioning = false
             previewViewController.photoToolbar.mask = nil
             self.toView?.isHidden = false
             pickerController.pickerDelegate?.pickerController(
@@ -433,7 +369,7 @@ public class PhotoBrowserInteractiveAnimator: PhotoBrowserInteractiveTransition,
             }
         }
     }
-    
+
     func resetScrollView(for enabled: Bool) {
         previewViewController?.collectionView.isScrollEnabled = enabled
         previewView?.scrollView.isScrollEnabled = enabled
@@ -445,4 +381,3 @@ public class PhotoBrowserInteractiveAnimator: PhotoBrowserInteractiveTransition,
         }
     }
 }
-

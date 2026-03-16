@@ -18,8 +18,6 @@ class PreviewLivePhotoViewCell: PhotoPreviewViewCell, PhotoPreviewContentViewDel
     private var liveMuteContainerView: UIVisualEffectView!
     private var liveMuteButton: UIButton!
     
-    private var liveMarkGlassView: UIView?
-    
     var livePhotoPlayType: PhotoPreviewViewController.PlayType = .once {
         didSet {
             scrollContentView.livePhotoPlayType = livePhotoPlayType
@@ -43,14 +41,6 @@ class PreviewLivePhotoViewCell: PhotoPreviewViewCell, PhotoPreviewContentViewDel
         scrollContentView = PhotoPreviewContentLivePhotoView()
         scrollContentView.delegate = self
         initView()
-         
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility {
-            let liveMarkGlassView = PreviewLivePhotoGlassMarkView.init()
-            liveMarkGlassView.mark_delegate = self
-            contentView.addSubview(liveMarkGlassView)
-            self.liveMarkGlassView = liveMarkGlassView
-            return
-        }
         
         liveMarkControl = UIControl()
         liveMarkControl.layer.masksToBounds = true
@@ -115,30 +105,6 @@ class PreviewLivePhotoViewCell: PhotoPreviewViewCell, PhotoPreviewContentViewDel
         guard photoAsset != nil else {
             return
         }
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility, let liveMarkGlassView = liveMarkGlassView as? PreviewLivePhotoGlassMarkView {
-            
-            #if HXPICKER_ENABLE_EDITOR
-            guard photoAsset.photoEditedResult == nil else {
-                liveMarkGlassView.isHidden = true
-                return
-            }
-            #endif
-            guard photoAsset.mediaSubType.isLivePhoto else {
-                liveMarkGlassView.isHidden = true
-                return
-            }
-            guard let liveMarkConfig = liveMarkConfig else {
-                liveMarkGlassView.isHidden = true
-                return
-            }
-            if !liveMarkConfig.allowShow, !liveMarkConfig.allowMutedShow {
-                liveMarkGlassView.isHidden = true
-            }
-            liveMarkGlassView.config = liveMarkConfig
-            liveMarkGlassView.leftBtn.isSelected = photoAsset.isDisableLivePhoto
-            liveMarkGlassView.rightBtn.isSelected = photoAsset.isLivePhotoMuted
-            return
-        }
 #if HXPICKER_ENABLE_EDITOR
         guard photoAsset.photoEditedResult == nil else {
             liveMarkControl.isHidden = true
@@ -198,13 +164,7 @@ class PreviewLivePhotoViewCell: PhotoPreviewViewCell, PhotoPreviewContentViewDel
             }
         }()
         let spacing = 10.0
-        
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility, let liveMarkGlassView {
-            let markX = safeAreaInsets.left
-            let markY = safeAreaInsets.top + spacing
-            liveMarkGlassView.frame = .init(x: markX, y: markY, width: width - markX * 2, height: 40)
-            return
-        }
+       
         if liveMarkConfig.allowShow {
             let contentInset = UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4)
             let imageTextSpacing = 2.0
@@ -260,15 +220,6 @@ class PreviewLivePhotoViewCell: PhotoPreviewViewCell, PhotoPreviewContentViewDel
         guard let superview = superview, superview is UICollectionView else {
             return
         }
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility, let liveMarkGlassView {
-            if !liveMarkGlassView.isHidden {
-                liveMarkGlassView.alpha = 0
-                UIView.animate(withDuration: 0.25) {
-                    self.liveMarkGlassView?.alpha = 1
-                }
-            }
-            return
-        }
         if !liveMarkControl.isHidden {
             liveMarkControl.alpha = 0
             UIView.animate(withDuration: 0.25) {
@@ -284,14 +235,6 @@ class PreviewLivePhotoViewCell: PhotoPreviewViewCell, PhotoPreviewContentViewDel
     }
     
     private func hideMark() {
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility, let liveMarkGlassView {
-            if !liveMarkGlassView.isHidden {
-                UIView.animate(withDuration: 0.25) {
-                    self.liveMarkGlassView?.alpha = 0
-                }
-            }
-            return
-        }
         if !liveMarkControl.isHidden {
             UIView.animate(withDuration: 0.25) {
                 self.liveMarkControl.alpha = 0
@@ -316,16 +259,5 @@ class PreviewLivePhotoViewCell: PhotoPreviewViewCell, PhotoPreviewContentViewDel
         delegate?.photoCell(self, livePhotoDidMuted: !self.photoAsset.isLivePhotoMuted)
         
         configLiveMark()
-    }
-}
-
-@available(iOS 26.0, *)
-extension PreviewLivePhotoViewCell: PreviewLivePhotoGlassMarkViewDelegate {
-    func livePhotoGlsasMarkView(didLeftClick livePhotoGlsasMarkView: PreviewLivePhotoGlassMarkView) {
-        didLiveMarkButtonClick()
-    }
-    
-    func livePhotoGlsasMarkView(didRightClick livePhotoGlsasMarkView: PreviewLivePhotoGlassMarkView) {
-        didLiveMuteButtonClick()
     }
 }

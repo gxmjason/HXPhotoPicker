@@ -289,9 +289,10 @@ class EditorContentView: UIView {
     }
     
     func updateSticker(
-        _ text: EditorStickerText
-    ) {
-        stickerView.update(text: text)
+        _ text: EditorStickerText,
+        _ ID: String
+    ) -> EditorStickersItemBaseView {
+        stickerView.update(text: text, ID)
     }
     
     func deselectedSticker() {

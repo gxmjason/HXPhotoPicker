@@ -8,11 +8,47 @@
 import UIKit
 
 class EditorStickerTextView: UIView {
-    let config: EditorConfiguration.Text
+    var config: EditorConfiguration.Text
     var textView: UITextView!
     private var textButton: UIButton!
     private var flowLayout: UICollectionViewFlowLayout!
     var collectionView: UICollectionView!
+    /// 字体选择（在 fontSlider 上方）
+    private var fontFlowLayout: UICollectionViewFlowLayout!
+    var fontCollectionView: UICollectionView!
+    /// 内置 16 种字体：(PostScript 名称, 展示名)，nil 表示系统粗体
+    private static let builtInFonts: [(name: String?, displayName: String)] = [
+        (nil, "系统粗体"),
+        ("PingFangSC-Regular", "苹方"),
+        ("PingFangSC-Medium", "苹方中黑"),
+        ("PingFangSC-Semibold", "苹方中粗"),
+        ("ziticqtezhanti", "特战体"),
+        ("-Regular", "哑铃黑方体"),
+        ("WD-XLLubrifontTC-Regular", "滑油体"),
+        ("zcoolwenyiti", "文艺体"),
+        ("WenCang-Regular", "书房体"),
+        ("ZiZhiQuXiMaiTi", "喜脉体"),
+        ("YOUSHEhaoshenti", "优设体"),
+        ("WeChat-Sans-SS-Bold", "薇中体"),
+        ("WeChat-Sans-Std-Regular", "小称体"),
+        ("Helvetica", "Helvetica"),
+        ("Helvetica-Bold", "Helvetica-Bold"),
+        ("ArialMT", "Arial"),
+        ("Arial-BoldMT", "Arial-Bold"),
+        ("Georgia", "Georgia"),
+        ("TimesNewRomanPSMT", "Times"),
+        ("Courier", "Courier"),
+        ("Menlo-Regular", "Menlo"),
+        ("Avenir-Book", "Avenir"),
+        ("Avenir-Heavy", "Avenir-Heavy"),
+        ("ChalkboardSE-Regular", "Chalkboard"),
+        ("AmericanTypewriter", "American")
+    ]
+    var selectedFontIndex: Int = 0
+
+    var fontSlider: UISlider!
+    var fontLabel: UILabel!
+    var setFont: UIFont?
     
     var text: String {
         textView.text
@@ -56,6 +92,10 @@ class EditorStickerTextView: UIView {
         stickerText: EditorStickerText?
     ) {
         self.config = config
+        let fontSize = UserDefaults.standard.value(forKey: "KEY_Edit_Add_words_Font_Size")
+        if fontSize != nil {
+            self.config.font = .boldSystemFont(ofSize: fontSize as! CGFloat)
+        }
         if #available(iOS 14.0, *), config.colors.count > 1, let color = config.colors.last?.color {
             self.customColor = .init(color: color)
         }else {
@@ -110,6 +150,81 @@ class EditorStickerTextView: UIView {
             forCellWithReuseIdentifier: "EditorStickerTextViewCellID"
         )
         addSubview(collectionView)
+        
+        fontFlowLayout = UICollectionViewFlowLayout()
+        fontFlowLayout.scrollDirection = .horizontal
+        fontFlowLayout.minimumInteritemSpacing = 8
+        fontFlowLayout.itemSize = CGSize(width: 110, height: 52)
+        fontCollectionView = HXCollectionView(frame: .zero, collectionViewLayout: fontFlowLayout)
+        fontCollectionView.backgroundColor = .clear
+        fontCollectionView.dataSource = self
+        fontCollectionView.delegate = self
+        fontCollectionView.showsHorizontalScrollIndicator = false
+        if #available(iOS 11.0, *) {
+            fontCollectionView.contentInsetAdjustmentBehavior = .never
+        }
+        fontCollectionView.register(
+            EditorStickerTextFontCell.self,
+            forCellWithReuseIdentifier: "EditorStickerTextFontCellID"
+        )
+        addSubview(fontCollectionView)
+        
+        fontSlider = UISlider()
+        fontSlider.minimumValue = 10
+        fontSlider.maximumValue = 30
+        fontSlider.value = Float(config.font.pointSize)
+        fontSlider.addTarget(self, action: #selector(fontSliderDidChange), for: .valueChanged)
+        addSubview(fontSlider)
+        
+        fontLabel = UILabel()
+        fontLabel.font = .boldSystemFont(ofSize: 14)
+        fontLabel.textColor = .white
+        fontLabel.text = "\(String(format: "%.1f", fontSlider.value))"
+        addSubview(fontLabel)
+        applyCurrentFont()
+    }
+    
+    @objc private func fontSliderDidChange() {
+        fontLabel.text = "\(String(format: "%.1f", fontSlider.value))"
+        applyCurrentFont()
+    }
+    
+    /// 根据当前选中的字体索引和滑块字号应用字体
+    func applyCurrentFont() {
+        let size = CGFloat(fontSlider.value)
+        let font = Self.font(forIndex: selectedFontIndex, size: size)
+        textView.font = font
+        config.font = font
+        setFont = config.font
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 8
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: config.font,
+            .paragraphStyle: paragraphStyle
+        ]
+        typingAttributes = attributes
+        changeTextColor(color: textView.textColor ?? currentSelectedColor)
+    }
+    
+    private static func font(forIndex index: Int, size: CGFloat) -> UIFont {
+        let safeIndex = min(max(index, 0), builtInFonts.count - 1)
+        let pair = builtInFonts[safeIndex]
+        if let name = pair.name, let f = UIFont(name: name, size: size) {
+            return f
+        }
+        return .boldSystemFont(ofSize: size)
+    }
+    
+    /// 供扩展使用：内置字体数量
+    static var builtInFontsCount: Int { builtInFonts.count }
+    /// 供扩展使用：按索引取内置字体（展示用字号）
+    static func fontForBuiltInIndex(_ index: Int, size: CGFloat = 16) -> UIFont {
+        font(forIndex: index, size: size)
+    }
+    /// 供扩展使用：按索引获取字体展示名称
+    static func displayNameForBuiltInIndex(_ index: Int) -> String {
+        let safeIndex = min(max(index, 0), builtInFonts.count - 1)
+        return builtInFonts[safeIndex].displayName
     }
     
     private func setupStickerText() {
@@ -299,6 +414,26 @@ class EditorStickerTextView: UIView {
             bottom: 15,
             right: 15 + UIDevice.rightMargin
         )
+        let fontRowY = textButton.y - 84
+        fontFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 12 + UIDevice.rightMargin)
+        fontCollectionView.frame = CGRect(
+            x: textButton.frame.maxX,
+            y: fontRowY,
+            width: width - textButton.width,
+            height: 44
+        )
+        fontLabel.frame = CGRect(
+            x: textButton.frame.minX + 10,
+            y: textButton.y - 30,
+            width: 40,
+            height: 30
+        )
+        fontSlider.frame = CGRect(
+            x: textButton.frame.maxX + 5,
+            y: textButton.y - 40,
+            width: width - textButton.width - 15,
+            height: 50
+        )
     }
     
     required init?(coder: NSCoder) {
@@ -401,6 +536,59 @@ class EditorStickerTextViewCell: UICollectionViewCell {
         colorBgView.center = CGPoint(x: width / 2, y: height / 2)
         imageView.frame = colorBgView.bounds
         colorView.center = CGPoint(x: width / 2, y: height / 2)
+    }
+}
+
+/// 字体选项 cell：预览 + 字体名称
+class EditorStickerTextFontCell: UICollectionViewCell {
+    private let sampleLabel: UILabel = {
+        let l = UILabel()
+        l.text = "ABCabc123"
+        l.textAlignment = .center
+        l.textColor = .white
+        l.font = .boldSystemFont(ofSize: 16)
+        return l
+    }()
+    private let nameLabel: UILabel = {
+        let l = UILabel()
+        l.textAlignment = .center
+        l.textColor = .white
+        l.font = .systemFont(ofSize: 11)
+        l.adjustsFontSizeToFitWidth = true
+        l.minimumScaleFactor = 0.7
+        return l
+    }()
+    
+    override var isSelected: Bool {
+        didSet {
+            layer.borderWidth = isSelected ? 2 : 0
+            layer.borderColor = isSelected ? UIColor.white.cgColor : nil
+            layer.cornerRadius = 6
+        }
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.addSubview(sampleLabel)
+        contentView.addSubview(nameLabel)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let bounds = contentView.bounds
+        let sampleHeight = bounds.height * 0.6
+        sampleLabel.frame = CGRect(x: 0, y: 0, width: bounds.width, height: sampleHeight)
+        nameLabel.frame = CGRect(x: 2, y: sampleHeight, width: bounds.width - 4, height: bounds.height - sampleHeight)
+    }
+    
+    func configure(font: UIFont, name: String, selected: Bool) {
+        sampleLabel.font = font
+        nameLabel.text = name
+        isSelected = selected
     }
 }
 

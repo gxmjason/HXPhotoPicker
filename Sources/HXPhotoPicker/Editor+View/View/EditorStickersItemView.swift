@@ -76,6 +76,20 @@ class EditorStickersItemView: EditorStickersItemBaseView {
     var pinchScale: CGFloat = 1
     var mirrorScale: CGPoint = .init(x: 1, y: 1)
     var firstTouch: Bool = false
+    //添加字幕用
+    var showBeginTime: Double = -1.0 {
+        willSet {
+            print("设置新showBeginTime\(newValue)")
+            self.item.showBeginTime = newValue
+        }
+    }//显示开始时刻
+    var showTimeDuration: Double = 1.0 {//显示时长（至少1秒）
+        willSet {
+            print("设置新showTimeDuration\(newValue)")
+            self.item.showTimeDuration = newValue
+        }
+    }
+    var showFrame: CGRect = CGRectZero
     
     private var itemMargin: CGFloat = 20
     private var initialScale: CGFloat = 1
@@ -314,6 +328,9 @@ class EditorStickersItemView: EditorStickersItemBaseView {
                 UIView.animate(withDuration: 0.25) {
                     self.center = itemCenter
                 }
+                if itemCenter.x > -1000 {
+                    self.showFrame = CGRect(origin: itemCenter, size: self.frame.size)
+                }
             }
             if isSelected {
                 deleteBtn.isHidden = false
@@ -474,6 +491,11 @@ class EditorStickersItemView: EditorStickersItemBaseView {
         
         frame = rect
         mirrorView.frame = bounds
+        
+        if self.frame.minX > -1000 {
+            self.showFrame = self.frame
+        }
+        
         let borderFrame = CGRect(
             x: -margin * 0.5,
             y: -margin * 0.5,

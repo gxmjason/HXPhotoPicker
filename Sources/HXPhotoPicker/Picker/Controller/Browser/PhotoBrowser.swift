@@ -364,7 +364,7 @@ open class PhotoBrowser: PhotoPickerController {
         if isShowDelete {
             previewViewController?.navigationItem.rightBarButtonItem = UIBarButtonItem(
                 title: .textManager.picker.browserDeleteTitle.text,
-                style: .plain,
+                style: .done,
                 target: self,
                 action: #selector(deletePreviewAsset)
             )

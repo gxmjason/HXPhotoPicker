@@ -33,6 +33,7 @@ open class CameraViewController: HXBaseViewController, CameraViewControllerProto
     
     private var didLayoutPreview = false
     
+    var previewView: CameraPreviewView!
     var normalPreviewView: CameraNormalPreviewView!
     var cameraManager: CameraManager!
     var bottomView: CameraBottomView!
@@ -43,6 +44,7 @@ open class CameraViewController: HXBaseViewController, CameraViewControllerProto
     var didLocation: Bool = false
     #endif
     
+    var firstShowFilterName = true
     var currentZoomFacto: CGFloat = 1
     
     private var requestCameraSuccess = false
@@ -99,8 +101,21 @@ open class CameraViewController: HXBaseViewController, CameraViewControllerProto
     private func initViews() {
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             cameraManager = CameraManager(config: config)
-            normalPreviewView = CameraNormalPreviewView(config: config)
-            normalPreviewView.delegate = self
+            if config.cameraType == .metal {
+                cameraManager.captureDidOutput = { [weak self] pixelBuffer in
+                    guard let self = self else { return }
+                    self.previewView.pixelBuffer = pixelBuffer
+                }
+                previewView = CameraPreviewView(
+                    config: config,
+                    cameraManager: cameraManager
+                )
+                previewView.delegate = self
+            }else {
+                normalPreviewView = CameraNormalPreviewView(config: config)
+                normalPreviewView.delegate = self
+            }
+            
             
             topMaskLayer = PhotoTools.getGradientShadowLayer(true)
             
@@ -130,14 +145,26 @@ open class CameraViewController: HXBaseViewController, CameraViewControllerProto
         }
     }
     open override func deviceOrientationWillChanged(notify: Notification) {
-        guard let previewView = normalPreviewView else { return }
-        didLayoutPreview = false
-        previewView.resetMask(nil)
+        if config.cameraType == .metal {
+            guard let previewView = previewView else { return }
+            didLayoutPreview = false
+            previewView.resetMask(nil)
+        }else {
+            guard let previewView = normalPreviewView else { return }
+            didLayoutPreview = false
+            previewView.resetMask(nil)
+        }
     }
     open override func deviceOrientationDidChanged(notify: Notification) {
-        guard let previewView = normalPreviewView else { return }
-        previewView.resetOrientation()
-        previewView.removeMask(true)
+        if config.cameraType == .metal {
+            guard let previewView = previewView else { return }
+            previewView.resetOrientation()
+            previewView.removeMask(true)
+        }else {
+            guard let previewView = normalPreviewView else { return }
+            previewView.resetOrientation()
+            previewView.removeMask(true)
+        }
     }
     
     open override func viewDidLayoutSubviews() {
@@ -180,7 +207,9 @@ open class CameraViewController: HXBaseViewController, CameraViewControllerProto
                let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer),
                let imageData = PhotoTools.jpegData(withPixelBuffer: pixelBuffer, attachments: nil) {
                 var image = UIImage(data: imageData)
-                image = image?.rotation(to: .right)
+                if self.config.cameraType == .normal {
+                    image = image?.rotation(to: .right)
+                }
                 if isFront {
                     image = image?.rotation(to: .upMirrored)
                 }
@@ -190,6 +219,9 @@ open class CameraViewController: HXBaseViewController, CameraViewControllerProto
             }
         }
         cameraManager.stopRunning()
+        if config.cameraType == .metal {
+            cameraManager.resetFilter()
+        }
     }
     
     func layoutSubviews() {
@@ -232,7 +264,11 @@ open class CameraViewController: HXBaseViewController, CameraViewControllerProto
         }
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             if !didLayoutPreview && AssetPermissionsUtil.cameraAuthorizationStatus == .authorized {
-                normalPreviewView.frame = previewRect
+                if config.cameraType == .metal {
+                    previewView.frame = previewRect
+                }else {
+                    normalPreviewView.frame = previewRect
+                }
                 didLayoutPreview = true
             }
         }
@@ -298,10 +334,18 @@ extension CameraViewController {
     }
     @objc
     func didEnterBackground() {
+        if config.cameraType == .metal {
+            previewView.clearMeatalPixelBuffer()
+            cameraManager.resetFilter()
+        }
     }
     
     @objc
     public func didSwitchCameraClick() {
+        if config.cameraType == .metal {
+            previewView.metalView.isPaused = true
+            previewView.pixelBuffer = nil
+        }
         do {
             try cameraManager.switchCameras()
         } catch {
@@ -312,15 +356,21 @@ extension CameraViewController {
             cameraManager.setFlashMode(.off)
         }
         resetZoom()
-        guard let connection = normalPreviewView.previewLayer?.connection else {
-            return
-        }
-        if cameraManager.activeCamera?.position == .front {
-            connection.isVideoMirrored = true
+        if config.cameraType == .metal {
+            previewView.resetOrientation()
+            cameraManager.resetFilter()
+            previewView.metalView.isPaused = false
         }else {
-            connection.isVideoMirrored = false
+            guard let connection = normalPreviewView.previewLayer?.connection else {
+                return
+            }
+            if cameraManager.activeCamera?.position == .front {
+                connection.isVideoMirrored = true
+            }else {
+                connection.isVideoMirrored = false
+            }
+            normalPreviewView.resetOrientation()
         }
-        normalPreviewView.resetOrientation()
     }
     
     func switchCameraFailed() {
@@ -329,14 +379,22 @@ extension CameraViewController {
     
     func resetZoom() {
         cameraManager.zoomFacto = 1
-        normalPreviewView.effectiveScale = 1
+        if config.cameraType == .metal {
+            previewView.effectiveScale = 1
+        }else {
+            normalPreviewView.effectiveScale = 1
+        }
     }
     
     func setupCamera() {
         DeviceOrientationHelper
             .shared
             .startDeviceOrientationNotifier()
-        view.addSubview(normalPreviewView)
+        if config.cameraType == .metal {
+            view.addSubview(previewView)
+        }else {
+            view.addSubview(normalPreviewView)
+        }
         view.addSubview(bottomView)
         cameraManager.sessionQueue.async {
             do {
@@ -414,9 +472,14 @@ extension CameraViewController {
         cameraManager.session.commitConfiguration()
         sessionCommitConfiguration = true
         cameraManager.startRunning(applyQueue: false)
-        normalPreviewView.setSession(cameraManager.session)
+        if config.cameraType == .normal {
+            normalPreviewView.setSession(cameraManager.session)
+        }
         requestCameraSuccess = true
         DispatchQueue.main.async {
+            if self.config.cameraType == .metal {
+                self.previewView.resetOrientation()
+            }
             self.sessionCompletion()
         }
     }
@@ -425,7 +488,11 @@ extension CameraViewController {
         if cameraManager.canSwitchCameras() {
             addSwithCameraButton()
         }
-        normalPreviewView.setupGestureRecognizer()
+        if config.cameraType == .metal {
+            previewView.setupGestureRecognizer()
+        }else {
+            normalPreviewView.setupGestureRecognizer()
+        }
         bottomView.addGesture(for: type)
         #if HXPICKER_ENABLE_CAMERA_LOCATION
         startLocation()

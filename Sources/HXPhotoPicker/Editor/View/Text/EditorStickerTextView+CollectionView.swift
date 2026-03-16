@@ -13,12 +13,25 @@ extension EditorStickerTextView: UICollectionViewDataSource,
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        config.colors.count
+        if collectionView === fontCollectionView {
+            return EditorStickerTextView.builtInFontsCount
+        }
+        return config.colors.count
     }
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
+        if collectionView === fontCollectionView {
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: "EditorStickerTextFontCellID",
+                for: indexPath
+            ) as! EditorStickerTextFontCell
+            let font = EditorStickerTextView.fontForBuiltInIndex(indexPath.item, size: 18)
+            let name = EditorStickerTextView.displayNameForBuiltInIndex(indexPath.item)
+            cell.configure(font: font, name: name, selected: indexPath.item == selectedFontIndex)
+            return cell
+        }
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: "EditorStickerTextViewCellID",
             for: indexPath
@@ -32,6 +45,12 @@ extension EditorStickerTextView: UICollectionViewDataSource,
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView === fontCollectionView {
+            selectedFontIndex = indexPath.item
+            fontCollectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+            applyCurrentFont()
+            return
+        }
         let colorHex = config.colors[indexPath.item]
         let color: UIColor
         if isShowCustomColor, indexPath.item == config.colors.count - 1 {

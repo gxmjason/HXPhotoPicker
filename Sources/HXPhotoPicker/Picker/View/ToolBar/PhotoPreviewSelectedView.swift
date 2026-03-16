@@ -24,8 +24,6 @@ class PhotoPreviewSelectedView: UIView,
     var collectionViewLayout: UICollectionViewFlowLayout!
     var collectionView: UICollectionView!
     var tickColor: UIColor?
-    var shadeView: UIView!
-    var shadeMaskLayer: CAGradientLayer!
     
     var contentOffset: CGPoint {
         get {
@@ -67,16 +65,7 @@ class PhotoPreviewSelectedView: UIView,
             collectionView.contentInsetAdjustmentBehavior = .never
         }
         reloadSectionInset()
-        
-        shadeView = UIView()
-        shadeView.addSubview(collectionView)
-        shadeMaskLayer = CAGradientLayer()
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility  {
-            shadeMaskLayer.colors = [UIColor.clear.cgColor, UIColor.white.cgColor, UIColor.white.cgColor, UIColor.clear.cgColor]
-            shadeMaskLayer.locations = [0.0, 0.075, 0.925, 1.0]
-            shadeView.layer.mask = shadeMaskLayer
-        }
-        addSubview(shadeView)
+        addSubview(collectionView)
     }
     
     var leftMargin: CGFloat {
@@ -97,32 +86,16 @@ class PhotoPreviewSelectedView: UIView,
         if x == 0 {
             collectionViewLayout.sectionInset.top = 10
             collectionViewLayout.sectionInset.bottom = 5
-            var leftInset: CGFloat
-            var rightInset: CGFloat
             if leftMargin > 0 {
-                leftInset = leftMargin
+                collectionViewLayout.sectionInset.left = leftMargin
             }else {
-                leftInset = 12
+                collectionViewLayout.sectionInset.left = 12
             }
             if UIDevice.rightMargin > 0 {
-                rightInset = UIDevice.rightMargin
+                collectionViewLayout.sectionInset.right = UIDevice.rightMargin
             }else {
-                rightInset = 12
+                collectionViewLayout.sectionInset.right = 12
             }
-            if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility {
-                if leftMargin > 0 {
-                    leftInset += 12
-                }else {
-                    leftInset += 8
-                }
-                if UIDevice.rightMargin > 0 {
-                    rightInset += 12
-                }else {
-                    rightInset += 8
-                }
-            }
-            collectionViewLayout.sectionInset.left = leftInset
-            collectionViewLayout.sectionInset.right = rightInset
         }
     }
     func reloadData(photoAssets: [PhotoAsset]) {
@@ -298,12 +271,6 @@ class PhotoPreviewSelectedView: UIView,
     }
     
     override func layoutSubviews() {
-        shadeMaskLayer.startPoint = CGPoint(x: 0, y: 1)
-        shadeMaskLayer.endPoint = CGPoint(x: 1, y: 1)
-        shadeView.frame = bounds
-        shadeMaskLayer.frame = bounds
-        
-        shadeView.frame = bounds
         if !collectionView.frame.equalTo(bounds) {
             reloadSectionInset()
         }

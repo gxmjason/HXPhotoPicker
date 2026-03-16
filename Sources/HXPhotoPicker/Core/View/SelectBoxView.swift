@@ -88,25 +88,14 @@ public final class SelectBoxView: UIControl {
     }
     
     private func backgroundPath() -> CGPath {
-        let rect: CGRect
-        if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility {
-            rect = CGRect(
-                x: 1,
-                y: 1,
-                width: config.size.width - 2,
-                height: config.size.height - 2
-            )
-        }else {
-            rect = CGRect(
+        let strokePath: UIBezierPath = .init(
+            roundedRect: CGRect(
                 x: 0,
                 y: 0,
                 width: config.size.width,
                 height: config.size.height
-            )
-        }
-        let strokePath: UIBezierPath = .init(
-            roundedRect: rect,
-            cornerRadius: rect.height / 2
+            ),
+            cornerRadius: config.size.height / 2
         )
         return strokePath.cgPath
     }

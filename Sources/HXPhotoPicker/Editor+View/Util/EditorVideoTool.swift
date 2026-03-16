@@ -297,7 +297,7 @@ fileprivate extension EditorVideoTool {
             for layerInstruction in layerInstructions {
                 sourceTrackIDs.append(layerInstruction.trackID as NSValue)
             }
-            let newInstruction = VideoCompositionInstruction(
+            let newInstruction = HXVideoCompositionInstruction(
                 sourceTrackIDs: sourceTrackIDs,
                 watermarkTrackID: watermarkLayerTrackID,
                 timeRange: instruction.timeRange,
@@ -312,7 +312,7 @@ fileprivate extension EditorVideoTool {
         if newInstructions.isEmpty {
             var sourceTrackIDs: [NSValue] = []
             sourceTrackIDs.append(videoTrack.trackID as NSValue)
-            let newInstruction = VideoCompositionInstruction(
+            let newInstruction = HXVideoCompositionInstruction(
                 sourceTrackIDs: sourceTrackIDs,
                 watermarkTrackID: watermarkLayerTrackID,
                 timeRange: videoTrack.timeRange,

@@ -115,9 +115,10 @@ extension EditorAdjusterView {
     }
     
     func updateSticker(
-        _ text: EditorStickerText
-    ) {
-        contentView.updateSticker(text)
+        _ text: EditorStickerText,
+        _ ID: String
+    ) -> EditorStickersItemBaseView {
+        contentView.updateSticker(text, ID)
     }
     
     func deselectedSticker() {

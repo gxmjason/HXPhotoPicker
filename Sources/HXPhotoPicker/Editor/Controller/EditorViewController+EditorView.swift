@@ -171,6 +171,7 @@ extension EditorViewController: EditorViewDelegate {
     /// 移除了贴纸
     public func editorView(_ editorView: EditorView, didRemoveStickerItem itemView: EditorStickersItemBaseView) {
         checkFinishButtonState()
+        noticeStickerTextViewControllerDidDelete(sticker: itemView)
     }
     public func editorView(_ editorView: EditorView, resetItemViews itemViews: [EditorStickersItemBaseView]) {
         for itemView in itemViews {

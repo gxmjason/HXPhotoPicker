@@ -68,10 +68,6 @@ public class PhotoPickerFinishItemView: UIView, PhotoNavigationItem {
             button.isEnabled = !config.photoList.bottomView.disableFinishButtonWhenNotSelected
             button.setTitle("完成".localized, for: .normal)
         }
-        if #available(iOS 26.0, *) {
-            let config = UIButton.Configuration.glass()
-            button.configuration = config
-        }
         self.setNeedsLayout()
     }
     

@@ -472,6 +472,9 @@ extension EditorViewController {
 
 extension EditorViewController {
     func startPlayVideo() {
+        if isAddWordSet {
+            return
+        }
         if videoControlView.startDuration == videoControlView.currentDuration {
             startPlayVideoTimer()
         }else {
@@ -496,6 +499,9 @@ extension EditorViewController {
     }
     
     private func startPlayVideoTimer() {
+        if isAddWordSet {
+            return
+        }
         let timeInterval = videoControlView.middleDuration
         if timeInterval.isNaN { return }
         videoPlayTimer = Timer.scheduledTimer(

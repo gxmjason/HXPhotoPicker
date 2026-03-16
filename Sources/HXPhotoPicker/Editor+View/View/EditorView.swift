@@ -124,6 +124,9 @@ open class EditorView: UIScrollView {
         didSet { adjusterView.zoomScale = zoomScale }
     }
     
+    //自定义属性：添加字幕时
+    var isAddWordSet: Bool = false
+    
     // MARK: private
     var allowZoom: Bool = true
     var editSize: CGSize = .zero
@@ -212,7 +215,10 @@ extension EditorView {
     
     func updateContentSize() {
         let viewWidth = width - contentInset.left - contentInset.right
-        let viewHeight = height - contentInset.top - contentInset.bottom
+        var viewHeight = height - contentInset.top - contentInset.bottom
+        if isAddWordSet {
+            viewHeight = viewHeight - 200
+        }
         let contentWidth = viewWidth
         var contentHeight: CGFloat
         if editSize.equalTo(.zero) {

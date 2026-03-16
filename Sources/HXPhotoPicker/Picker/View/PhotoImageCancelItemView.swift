@@ -23,12 +23,7 @@ public class PhotoImageCancelItemView: UIView, PhotoNavigationItem {
     func initView() {
         button = UIButton(type: .custom)
         let imageName = PhotoManager.isDark ? config.photoList.cancelDarkImageName : config.photoList.cancelImageName
-        var image: UIImage? = imageName.image
-        if #available(iOS 15.0, *), !PhotoManager.isIos26Compatibility {
-            button.configuration = config.photoList.cancelButtonConfig
-            image = image?.withRenderingMode(.alwaysTemplate)
-        }
-        button.setImage(image, for: .normal)
+        button.setImage(imageName.image, for: .normal)
         button.addTarget(self, action: #selector(didCancelClick), for: .touchUpInside)
         addSubview(button)
 
@@ -37,11 +32,7 @@ public class PhotoImageCancelItemView: UIView, PhotoNavigationItem {
     
     func setColor() {
         let imageName = PhotoManager.isDark ? config.photoList.cancelDarkImageName : config.photoList.cancelImageName
-        var image: UIImage? = imageName.image
-        if #available(iOS 15.0, *), !PhotoManager.isIos26Compatibility {
-            image = image?.withRenderingMode(.alwaysTemplate)
-        }
-        button.setImage(image, for: .normal)
+        button.setImage(imageName.image, for: .normal)
         guard let color = PhotoManager.isDark ? config.navigationDarkTintColor : config.navigationTintColor else {
             return
         }

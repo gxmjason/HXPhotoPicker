@@ -82,7 +82,7 @@ class EditorVideoCompositor: NSObject, AVVideoCompositing {
     func newRenderdPixelBuffer(
         for request: AVAsynchronousVideoCompositionRequest
     ) -> CVPixelBuffer? {
-        guard let instruction = request.videoCompositionInstruction as? VideoCompositionInstruction,
+        guard let instruction = request.videoCompositionInstruction as? HXVideoCompositionInstruction,
               let trackID = instruction.requiredSourceTrackIDs?.first as? CMPersistentTrackID else {
             return nil
         }
@@ -404,7 +404,7 @@ class EditorVideoCompositor: NSObject, AVVideoCompositing {
 
 public typealias VideoCompositionFilter = (CVPixelBuffer, CMTime) -> CVPixelBuffer?
 
-class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtocol {
+class HXVideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtocol {
     var timeRange: CMTimeRange
     
     var enablePostProcessing: Bool

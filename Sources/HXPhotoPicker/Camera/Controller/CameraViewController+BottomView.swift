@@ -30,7 +30,11 @@ extension CameraViewController: CameraBottomViewDelegate {
         if let image = image?.normalizedImage() {
             resetZoom()
             cameraManager.stopRunning()
-            normalPreviewView.resetMask(image)
+            if config.cameraType == .metal {
+                previewView.resetMask(image)
+            }else {
+                normalPreviewView.resetMask(image)
+            }
             bottomView.isGestureEnable = false
             saveCameraImage(image)
             #if HXPICKER_ENABLE_EDITOR
@@ -63,7 +67,11 @@ extension CameraViewController: CameraBottomViewDelegate {
             resetZoom()
             let image = PhotoTools.getVideoThumbnailImage(videoURL: videoURL, atTime: 0.1)
             cameraManager.stopRunning()
-            normalPreviewView.resetMask(image)
+            if config.cameraType == .metal {
+                previewView.resetMask(image)
+            }else {
+                normalPreviewView.resetMask(image)
+            }
             bottomView.isGestureEnable = false
             saveCameraVideo(videoURL)
             #if HXPICKER_ENABLE_EDITOR
@@ -93,15 +101,28 @@ extension CameraViewController: CameraBottomViewDelegate {
         cameraManager.stopRecording()
     }
     func bottomView(longPressDidBegan bottomView: CameraBottomView) {
-        currentZoomFacto = normalPreviewView.effectiveScale
+        if config.cameraType == .metal {
+            currentZoomFacto = previewView.effectiveScale
+        }else {
+            currentZoomFacto = normalPreviewView.effectiveScale
+        }
     }
     func bottomView(_ bottomView: CameraBottomView, longPressDidChanged scale: CGFloat) {
-        let remaining = normalPreviewView.maxScale - currentZoomFacto
+        let remaining: CGFloat
+        if config.cameraType == .metal {
+            remaining = previewView.maxScale - currentZoomFacto
+        }else {
+            remaining = normalPreviewView.maxScale - currentZoomFacto
+        }
         let zoomScale = currentZoomFacto + remaining * scale
         cameraManager.zoomFacto = zoomScale
     }
     func bottomView(longPressDidEnded bottomView: CameraBottomView) {
-        normalPreviewView.effectiveScale = cameraManager.zoomFacto
+        if config.cameraType == .metal {
+            previewView.effectiveScale = cameraManager.zoomFacto
+        }else {
+            normalPreviewView.effectiveScale = cameraManager.zoomFacto
+        }
     }
     func bottomView(didBackButton bottomView: CameraBottomView) {
         backClick(true)

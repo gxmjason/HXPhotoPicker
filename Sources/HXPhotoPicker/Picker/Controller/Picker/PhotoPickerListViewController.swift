@@ -42,8 +42,7 @@ open class PhotoPickerListViewController:
             allAssets = assetResult.assets
             assets = assetResult.assets
             if let collectionView {
-                reloadAll()
-//                collectionView.reloadData()
+                collectionView.reloadData()
             }
             updateEmptyView()
         }
@@ -205,9 +204,8 @@ open class PhotoPickerListViewController:
             assets = allAssets
             photoCount = assetResult.photoCount
             videoCount = assetResult.videoCount
-//            collectionView.reloadData()
-            reloadAll()
-            scrollTo(nil, animated: true)
+            collectionView.reloadData()
+            scrollTo(nil)
             updateEmptyView()
             return
         }
@@ -255,18 +253,9 @@ open class PhotoPickerListViewController:
         self.assets = assets
         self.photoCount = photoCount
         self.videoCount = videoCount
-//        collectionView.reloadData()
-        reloadAll()
-        scrollTo(nil, animated: true)
+        collectionView.reloadData()
+        scrollTo(nil)
         updateEmptyView()
-    }
-    
-    func reloadAll(duration: TimeInterval = 0.15) {
-        UIView.transition(with: collectionView,
-                          duration: duration,
-                          options: .transitionCrossDissolve) {
-            self.collectionView.reloadData()
-        }
     }
     
     func updateEmptyView() {
@@ -319,7 +308,7 @@ open class PhotoPickerListViewController:
         }
     }
     
-    open override func deviceOrientationWillChanged(notify: Notification) {
+    public override func deviceOrientationWillChanged(notify: Notification) {
         orientationDidChange = true
         let items = collectionView.indexPathsForVisibleItems.sorted { $0.item < $1.item }
         if !items.isEmpty {

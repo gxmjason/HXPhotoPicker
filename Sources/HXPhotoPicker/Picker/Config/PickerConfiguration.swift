@@ -105,16 +105,7 @@ public struct PickerConfiguration: IndicatorTypeConfig, PhotoDebugLogsConfig, Ph
     
     /// Album display mode
     /// 相册展示模式
-    public var albumShowMode: AlbumShowMode = .normal {
-        didSet {
-            #if canImport(UIKit.UIGlassEffect)
-            if #available(iOS 26.0, *), !PhotoManager.isIos26Compatibility, albumShowMode.isPop  {
-                photoList.leftNavigationItems = [PhotoPickerFilterItemView.self]
-                photoList.rightNavigationItems = [PhotoTextCancelItemView.self]
-            }
-            #endif
-        }
-    }
+    public var albumShowMode: AlbumShowMode = .normal
     
     /// Whether to sort by creation time when getting the resource list
     /// 获取资源列表时是否按创建时间排序
