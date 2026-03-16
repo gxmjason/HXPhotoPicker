@@ -165,6 +165,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         return view
     }
     
+    open
     func getStickerItem() -> Item? {
         var datas: [Item.Info] = []
         for case let itemView as EditorStickersItemView in subviews {
@@ -187,6 +188,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         )
         return stickerData
     }
+    open
     func setStickerItem(_ item: Item?, viewSize: CGSize) {
         guard let item = item else {
             return
@@ -751,13 +753,15 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         delegate?.stickerView(self, didRemoveItem: itemView)
     }
     
+    public
     struct Item: Codable {
         let items: [Info]
         let mirrorScale: CGPoint
         let angel: CGFloat
         
+        public
         struct Info: Codable {
-            let item: EditorStickerItem
+            public let item: EditorStickerItem
             let pinchScale: CGFloat
             let rotation: CGFloat
             let centerScale: CGPoint

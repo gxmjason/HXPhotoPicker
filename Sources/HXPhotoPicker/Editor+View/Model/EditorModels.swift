@@ -317,19 +317,19 @@ struct EditorStickerItem: Codable {
     
     var type: EditorStickerItemType
     
-    var text: EditorStickerText? { type.text }
+    public var text: EditorStickerText? { type.text }
     
-    var image: UIImage? { type.image }
+    public var image: UIImage? { type.image }
     
     var imageData: Data? { type.imageData }
     
-    var isText: Bool { type.isText }
+    public var isText: Bool { type.isText }
     
     var audio: EditorStickerAudio? { type.audio }
     
     var isAudio: Bool { type.isAudio }
      
-    var frame: CGRect = .zero
+    public var frame: CGRect = .zero
     
     //添加字幕用 ID
     public var ID: String = UUID().uuidString
