@@ -34,6 +34,7 @@ extension EditorViewController: EditorVideoControlViewDelegate {
         controlViewStartEndTime(at: time)
         updateVideoTimeRange()
     }
+    public
     func controlViewStartChangeTime(at time: CMTime) {
         if editorView.isVideoPlaying {
             editorView.pauseVideo()

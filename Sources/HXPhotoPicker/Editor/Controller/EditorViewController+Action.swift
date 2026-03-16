@@ -71,7 +71,7 @@ extension EditorViewController {
     }
     
     @objc
-    func didFinishButtonClick(button: UIButton) {
+    open func didFinishButtonClick(button: UIButton) {
         if let selectedTool = selectedTool {
             switch selectedTool.type {
             case .cropSize:

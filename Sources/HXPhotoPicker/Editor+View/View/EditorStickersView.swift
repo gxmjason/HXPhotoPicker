@@ -221,6 +221,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         }
         delegate?.stickerView(self, resetItemViews: itemViews)
     }
+    open
     func getStickerInfo() -> [Info] {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
@@ -739,6 +740,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         return .zero
     }
     
+    open
     func stickerItemView(didDeleteClick itemView: EditorStickersItemView) {
         if itemView == selectView {
             deselectedSticker()
@@ -771,6 +773,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         let audio: EditorStickerAudio
     }
     
+    public
     struct Info {
         let image: UIImage?
         let imageData: Data?

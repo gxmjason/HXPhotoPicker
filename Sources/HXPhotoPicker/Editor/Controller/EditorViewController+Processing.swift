@@ -520,6 +520,7 @@ extension EditorViewController {
         )
     }
     
+    public
     func stopPlayVideo() {
         videoPlayTimer?.invalidate()
         videoPlayTimer = nil

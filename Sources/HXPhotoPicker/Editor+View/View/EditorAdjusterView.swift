@@ -355,18 +355,23 @@ extension EditorAdjusterView {
     func loadVideoAsset(isPlay: Bool, _ completion: ((Bool) -> Void)? = nil) {
         contentView.loadAsset(isPlay: isPlay, completion)
     }
+    public
     func seekVideo(to time: CMTime, isPlay: Bool, comletion: ((Bool) -> Void)? = nil) {
         contentView.seek(to: time, isPlay: isPlay, comletion: comletion)
     }
+    public
     func seekVideo(to time: TimeInterval, isPlay: Bool, comletion: ((Bool) -> Void)? = nil) {
         contentView.seek(to: time, isPlay: isPlay, comletion: comletion)
     }
+    public
     func playVideo() {
         contentView.play()
     }
+    public
     func pauseVideo() {
         contentView.pause()
     }
+    public
     func resetPlayVideo(completion: ((CMTime) -> Void)? = nil) {
         contentView.resetPlay(completion: completion)
     }
