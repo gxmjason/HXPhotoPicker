@@ -21,6 +21,7 @@ protocol EditorVideoPlayerViewDelegate: AnyObject {
     func playerView(_ playerView: EditorVideoPlayerView, applyFilter sourceImage: CIImage, at time: CMTime) -> CIImage
 }
 
+open 
 class EditorVideoPlayerView: VideoPlayerView {
     weak var delegate: EditorVideoPlayerViewDelegate?
     var playbackTimeObserver: Any?
@@ -276,6 +277,7 @@ class EditorVideoPlayerView: VideoPlayerView {
         }
         didEnterBackground = false
     }
+    open 
     var isPlayToEndTimeAutoPlay: Bool = true
     @objc func playerItemDidPlayToEndTimeNotification(notifi: Notification) {
         if isPlayToEndTimeAutoPlay {
@@ -379,11 +381,11 @@ class EditorVideoPlayerView: VideoPlayerView {
         coverImageView.isHidden = false
         isPlaying = false
     }
-    override func layoutSubviews() {
+    open override func layoutSubviews() {
         super.layoutSubviews()
         coverImageView.frame = bounds
     }
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     deinit {

@@ -22,6 +22,7 @@ protocol EditorStickersItemViewDelegate: AnyObject {
     func stickerItemView(didDeleteClick itemView: EditorStickersItemView)
     func stickerItemView(didDragScale itemView: EditorStickersItemView)
 }
+open
 class EditorStickersItemView: EditorStickersItemBaseView {
     weak var delegate: EditorStickersItemViewDelegate?
     private var mirrorView: UIView!
@@ -41,7 +42,7 @@ class EditorStickersItemView: EditorStickersItemBaseView {
     var scale: CGFloat
     var touching: Bool = false
     
-    override var isSelected: Bool {
+    public override var isSelected: Bool {
         willSet {
             if !item.isAudio {
                 let borderWidth: CGFloat = newValue ? 1 / scale : 0
@@ -77,18 +78,21 @@ class EditorStickersItemView: EditorStickersItemBaseView {
     var mirrorScale: CGPoint = .init(x: 1, y: 1)
     var firstTouch: Bool = false
     //添加字幕用
+    open
     var showBeginTime: Double = -1.0 {
         willSet {
             print("设置新showBeginTime\(newValue)")
             self.item.showBeginTime = newValue
         }
     }//显示开始时刻
+    open
     var showTimeDuration: Double = 1.0 {//显示时长（至少1秒）
         willSet {
             print("设置新showTimeDuration\(newValue)")
             self.item.showTimeDuration = newValue
         }
     }
+    open
     var showFrame: CGRect = CGRectZero
     
     private var itemMargin: CGFloat = 20
@@ -195,13 +199,13 @@ class EditorStickersItemView: EditorStickersItemBaseView {
         contentView.addGestureRecognizer(rotationGR)
     }
     
-    override func didMoveToSuperview() {
+    open override func didMoveToSuperview() {
         super.didMoveToSuperview()
         if superview == nil {
             didRemoveFromSuperview?(self)
         }
     }
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    open override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let view = super.hitTest(point, with: event)
         if bounds.contains(point) {
             return contentView
@@ -665,7 +669,7 @@ class EditorStickersItemView: EditorStickersItemBaseView {
         mirrorView.transform = currentMirrorTransform
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }

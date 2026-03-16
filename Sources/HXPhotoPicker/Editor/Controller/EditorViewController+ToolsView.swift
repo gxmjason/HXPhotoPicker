@@ -692,6 +692,7 @@ extension EditorViewController: EditorToolsViewDelegate {
         }
     }
     
+    public
     func presentText(_ text: EditorStickerText? = nil, _ ID: String = "") {
         let textVC = EditorStickerTextViewController(config: config.text, stickerText: text)
         textVC.delegate = self

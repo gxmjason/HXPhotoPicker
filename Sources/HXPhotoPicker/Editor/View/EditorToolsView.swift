@@ -12,6 +12,7 @@ protocol EditorToolsViewDelegate: AnyObject {
     func toolsView(_ toolsView: EditorToolsView, deselectItemAt model: EditorConfiguration.ToolsView.Options)
 }
 
+open
 class EditorToolsView: UIView {
     
     weak var delegate: EditorToolsViewDelegate?
@@ -110,7 +111,7 @@ class EditorToolsView: UIView {
         }
     }
     
-    override func layoutSubviews() {
+    open override func layoutSubviews() {
         super.layoutSubviews()
         
         let count = CGFloat(options.count)
@@ -158,7 +159,7 @@ class EditorToolsView: UIView {
         shadeMaskLayer.frame = CGRect(x: 0, y: 0, width: shadeView.width, height: shadeView.height)
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -166,11 +167,11 @@ class EditorToolsView: UIView {
 }
 
 extension EditorToolsView: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         options.count
     }
     
-    func collectionView(
+    public func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
@@ -205,7 +206,7 @@ extension EditorToolsView: UICollectionViewDataSource {
 }
 
 extension EditorToolsView: UICollectionViewDelegate {
-    func collectionView(
+    public func collectionView(
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {

@@ -43,10 +43,10 @@ public enum EditorMosaicType: Int, Codable {
     case smear
 }
 
-public class EditorStickersItemBaseView: UIView {
-    public var isSelected: Bool = false
+open class EditorStickersItemBaseView: UIView {
+    open var isSelected: Bool = false
     
-    public var text: EditorStickerText? {
+    open var text: EditorStickerText? {
         item.text
     }
     
@@ -54,7 +54,7 @@ public class EditorStickersItemBaseView: UIView {
         item.audio
     }
     
-    var item: EditorStickerItem!
+    open var item: EditorStickerItem!
 }
 
 public enum EditorError: LocalizedError, CustomStringConvertible {

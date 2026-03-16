@@ -1,26 +1,26 @@
 PODS:
-  - HXPhotoPicker (5.0.5):
-    - HXPhotoPicker/Default (= 5.0.5)
-  - HXPhotoPicker/Camera (5.0.5):
-    - HXPhotoPicker/Camera/Lite (= 5.0.5)
-    - HXPhotoPicker/Camera/Location (= 5.0.5)
-  - HXPhotoPicker/Camera/Lite (5.0.5):
+  - HXPhotoPicker (1.0.0-gxm):
+    - HXPhotoPicker/Default (= 1.0.0-gxm)
+  - HXPhotoPicker/Camera (1.0.0-gxm):
+    - HXPhotoPicker/Camera/Lite (= 1.0.0-gxm)
+    - HXPhotoPicker/Camera/Location (= 1.0.0-gxm)
+  - HXPhotoPicker/Camera/Lite (1.0.0-gxm):
     - HXPhotoPicker/Core
-  - HXPhotoPicker/Camera/Location (5.0.5):
+  - HXPhotoPicker/Camera/Location (1.0.0-gxm):
     - HXPhotoPicker/Camera/Lite
-  - HXPhotoPicker/Core (5.0.5):
+  - HXPhotoPicker/Core (1.0.0-gxm):
     - HXPhotoPicker/Resources
-  - HXPhotoPicker/Default (5.0.5):
+  - HXPhotoPicker/Default (1.0.0-gxm):
     - HXPhotoPicker/Camera
     - HXPhotoPicker/Editor
     - HXPhotoPicker/Picker
-  - HXPhotoPicker/Editor (5.0.5):
+  - HXPhotoPicker/Editor (1.0.0-gxm):
     - HXPhotoPicker/EditorView
-  - HXPhotoPicker/EditorView (5.0.5):
+  - HXPhotoPicker/EditorView (1.0.0-gxm):
     - HXPhotoPicker/Core
-  - HXPhotoPicker/Picker (5.0.5):
+  - HXPhotoPicker/Picker (1.0.0-gxm):
     - HXPhotoPicker/Core
-  - HXPhotoPicker/Resources (5.0.5)
+  - HXPhotoPicker/Resources (1.0.0-gxm)
 
 DEPENDENCIES:
   - HXPhotoPicker (from `./`)
@@ -30,7 +30,7 @@ EXTERNAL SOURCES:
     :path: "./"
 
 SPEC CHECKSUMS:
-  HXPhotoPicker: b1c6726a17b64e2c66c8a4848bbdfe6eb2be5e81
+  HXPhotoPicker: e659bcf1847563a2a42f371e2468a59b0b0e814b
 
 PODFILE CHECKSUM: e8762af61101d956c191b66b8b0925e549dffcbd
 

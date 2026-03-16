@@ -26,6 +26,7 @@ protocol EditorVideoControlViewDelegate2: AnyObject {
 }
 
 // swiftlint:disable type_body_length
+open
 class EditorVideoControlView: UIView {
     // swiftlint:enable type_body_length
     
@@ -397,7 +398,7 @@ class EditorVideoControlView: UIView {
         loadVideoFrame(avAsset)
     }
     
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    open override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let lineFrame = progressLineView.layer.presentation()?.frame ?? progressLineView.frame
         let rect = lineFrame.inset(by: .init(top: 4, left: 10, bottom: 4, right: 10))
         if rect.contains(point) {
@@ -406,7 +407,7 @@ class EditorVideoControlView: UIView {
         return super.hitTest(point, with: event)
     }
     
-    override func layoutSubviews() {
+    open override func layoutSubviews() {
         super.layoutSubviews()
         progressLineView.size = .init(width: 4, height: height - 4)
         progressLineView.centerY = height / 2
@@ -445,7 +446,7 @@ class EditorVideoControlView: UIView {
         imageGenerator?.cancelAllCGImageGeneration()
         videoFrameMap.removeAll()
     }
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
@@ -776,10 +777,10 @@ extension EditorVideoControlView: UICollectionViewDataSource,
                                UICollectionViewDelegate,
                                UICollectionViewDelegateFlowLayout {
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         videoFrameCount
     }
-    func collectionView(
+    public func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
@@ -789,7 +790,7 @@ extension EditorVideoControlView: UICollectionViewDataSource,
         ) as! EditorVideoControlViewCell
         return cell
     }
-    func collectionView(
+    public func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
@@ -800,7 +801,7 @@ extension EditorVideoControlView: UICollectionViewDataSource,
         let itemW = contentWidth - CGFloat(indexPath.item) * itemWidth
         return CGSize(width: itemW, height: height - 8)
     }
-    func collectionView(
+    public func collectionView(
         _ collectionView: UICollectionView,
         willDisplay cell: UICollectionViewCell,
         forItemAt indexPath: IndexPath
@@ -846,7 +847,7 @@ extension EditorVideoControlView: UICollectionViewDataSource,
         let time = CMTimeMakeWithSeconds(Float64(second), preferredTimescale: 1000)
         return time
     }
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if videoFrameCount > 0 {
             if !scrollView.isTracking && !scrollView.isDragging && !scrollView.isDecelerating {
                 return
@@ -862,7 +863,7 @@ extension EditorVideoControlView: UICollectionViewDataSource,
             }
         }
     }
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate && isBeginScrolling {
             showLineView(at: startTime)
             delegate?.controlView(self, endScrollAt: startTime)
@@ -872,7 +873,7 @@ extension EditorVideoControlView: UICollectionViewDataSource,
         }
         isBeginScrolling = false
     }
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         if !isBeginScrolling {
             return
         }

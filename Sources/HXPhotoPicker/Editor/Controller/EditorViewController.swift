@@ -16,22 +16,22 @@ extension EditorViewController {
 
 open class EditorViewController: HXBaseViewController {
     
-    public weak var delegate: EditorViewControllerDelegate?
-    public var config: EditorConfiguration
+    open weak var delegate: EditorViewControllerDelegate?
+    open var config: EditorConfiguration
     public let assets: [EditorAsset]
-    public var selectedAsset: EditorAsset
-    public var editedResult: EditedResult?
+    open var selectedAsset: EditorAsset
+    open var editedResult: EditedResult?
     public var finishHandler: FinishHandler?
     public var cancelHandler: CancelHandler?
     
-    public private(set) var selectedIndex: Int = 0
+    open private(set) var selectedIndex: Int = 0
     
-    public var topMaskView: UIView!
-    public var bottomMaskView: UIView!
-    public var topMaskLayer: CAGradientLayer!
-    public var bottomMaskLayer: CAGradientLayer!
+    open var topMaskView: UIView!
+    open var bottomMaskView: UIView!
+    open var topMaskLayer: CAGradientLayer!
+    open var bottomMaskLayer: CAGradientLayer!
     
-    public var selectedTool: EditorConfiguration.ToolsView.Options?
+    open var selectedTool: EditorConfiguration.ToolsView.Options?
     
     public init(
         _ asset: EditorAsset,
@@ -53,8 +53,8 @@ open class EditorViewController: HXBaseViewController {
         modalPresentationStyle = config.modalPresentationStyle
     }
     
-    var videoControlView: EditorVideoControlView!
-    var brushColorView: EditorBrushColorView!
+    open var videoControlView: EditorVideoControlView!
+    open var brushColorView: EditorBrushColorView!
     var brushSizeView: EditorBrushSizeView!
     var brushBlockView: EditorBrushBlockView!
     var filterEditView: EditorFilterEditView!
@@ -65,25 +65,25 @@ open class EditorViewController: HXBaseViewController {
     var mosaicToolView: EditorMosaicToolView!
     var musicView: EditorMusicView!
     var volumeView: EditorVolumeView!
-    var toolsView: EditorToolsView!
-    var cancelButton: UIButton!
-    var finishButton: UIButton!
-    var resetButton: UIButton!
-    var leftRotateButton: UIButton!
-    var rightRotateButton: UIButton!
-    var mirrorHorizontallyButton: UIButton!
-    var mirrorVerticallyButton: UIButton!
-    var maskListButton: UIButton!
-    var scaleSwitchView: UIView!
-    var scaleSwitchLeftBtn: UIButton!
-    var scaleSwitchRightBtn: UIButton!
-    var drawCancelButton: UIButton!
-    var drawFinishButton: UIButton!
-    var drawUndoBtn: UIButton!
-    var drawUndoAllBtn: UIButton!
-    var drawRedoBtn: UIButton!
-    var editorView: EditorView!
-    var backgroundView: UIScrollView!
+    open var toolsView: EditorToolsView!
+    open var cancelButton: UIButton!
+    open var finishButton: UIButton!
+    open var resetButton: UIButton!
+    open var leftRotateButton: UIButton!
+    open var rightRotateButton: UIButton!
+    open var mirrorHorizontallyButton: UIButton!
+    open var mirrorVerticallyButton: UIButton!
+    open var maskListButton: UIButton!
+    open var scaleSwitchView: UIView!
+    open var scaleSwitchLeftBtn: UIButton!
+    open var scaleSwitchRightBtn: UIButton!
+    open var drawCancelButton: UIButton!
+    open var drawFinishButton: UIButton!
+    open var drawUndoBtn: UIButton!
+    open var drawUndoAllBtn: UIButton!
+    open var drawRedoBtn: UIButton!
+    open var editorView: EditorView!
+    open var backgroundView: UIScrollView!
     
     var finishScaleAngle: CGFloat = 0
     var lastScaleAngle: CGFloat = 0
@@ -94,9 +94,9 @@ open class EditorViewController: HXBaseViewController {
     
     var backgroundInsetRect: CGRect = .zero
     
-    var isAddWordSet: Bool = false
+    open var isAddWordSet: Bool = false
     
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         imageFilterQueue = OperationQueue()
         imageFilterQueue.maxConcurrentOperationCount = 1
@@ -573,7 +573,7 @@ open class EditorViewController: HXBaseViewController {
     var lastSelectedTool: EditorConfiguration.ToolsView.Options?
     var isToolsDisplay: Bool = true
     weak var videoPlayTimer: Timer?
-    var orientationDidChange: Bool = false
+    open var orientationDidChange: Bool = false
     var videoControlInfo: EditorVideoControlInfo?
     
     weak var audioSticker: EditorStickersItemBaseView?
@@ -624,7 +624,7 @@ open class EditorViewController: HXBaseViewController {
     var videoCoverView: UIImageView?
     weak var videoTool: EditorVideoTool?
     
-    public override func deviceOrientationWillChanged(notify: Notification) {
+    open override func deviceOrientationWillChanged(notify: Notification) {
         orientationDidChange = true
         if editorView.type == .video {
             if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac, editorView.isVideoPlaying {
@@ -650,7 +650,7 @@ open class EditorViewController: HXBaseViewController {
     
     var navModalStyle: UIModalPresentationStyle?
     var navFrame: CGRect?
-    var firstAppear = true
+    open var firstAppear = true
     var isFullScreen: Bool {
         let isFull = splitViewController?.modalPresentationStyle == .fullScreen || splitViewController?.modalPresentationStyle == .overFullScreen
         if let nav = navigationController {
@@ -683,7 +683,7 @@ open class EditorViewController: HXBaseViewController {
             return isFull
         }
     }
-    public override func viewDidLayoutSubviews() {
+    open override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if selectedTool?.type != .graffiti || orientationDidChange {
             editorView.frame = view.bounds
@@ -788,6 +788,7 @@ open class EditorViewController: HXBaseViewController {
         }
     }
     
+    open
     func layoutPortraitViews(_ buttonHeight: CGFloat) {
         bottomMaskLayer = PhotoTools.getGradientShadowLayer(false)
         bottomMaskView.layer.addSublayer(bottomMaskLayer)
@@ -1282,10 +1283,10 @@ open class EditorViewController: HXBaseViewController {
         filterParameterView.frame = viewFrame
     }
     
-    public override var shouldAutorotate: Bool {
+    open override var shouldAutorotate: Bool {
         config.shouldAutorotate
     }
-    public override var prefersStatusBarHidden: Bool {
+    open override var prefersStatusBarHidden: Bool {
         config.prefersStatusBarHidden
     }
     open override var prefersHomeIndicatorAutoHidden: Bool {
@@ -1356,28 +1357,28 @@ open class EditorViewController: HXBaseViewController {
     
     
     //给子类调用
-    public func noticeStickerTextViewControllerDidFinish(sticker: EditorStickersItemBaseView) {
+    open func noticeStickerTextViewControllerDidFinish(sticker: EditorStickersItemBaseView) {
         
     }
     //给子类调用
-    public func noticeStickerTextViewControllerDidUpdate(sticker: EditorStickersItemBaseView) {
+    open func noticeStickerTextViewControllerDidUpdate(sticker: EditorStickersItemBaseView) {
         
     }
     //给子类调用
-    public func noticeStickerTextViewControllerDidDelete(sticker: EditorStickersItemBaseView) {
+    open func noticeStickerTextViewControllerDidDelete(sticker: EditorStickersItemBaseView) {
         
     }
 }
 
 extension EditorViewController: UIScrollViewDelegate {
     
-    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+    open func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         if scrollView != backgroundView {
             return nil
         }
         return editorView
     }
-    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
+    open func scrollViewDidZoom(_ scrollView: UIScrollView) {
         if scrollView != backgroundView {
             return
         }
@@ -1415,7 +1416,7 @@ extension EditorViewController: UIScrollViewDelegate {
         }
     }
     
-    public func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+    open func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
         if scrollView != backgroundView {
             return
         }

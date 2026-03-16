@@ -8,6 +8,7 @@
 import UIKit
 import AVFoundation
 
+open 
 class EditorAdjusterView: UIView {
     
     weak var delegate: EditorAdjusterViewDelegate?
@@ -86,11 +87,11 @@ class EditorAdjusterView: UIView {
         addSubview(containerView)
         resetState()
     }
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+    open override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         if state == .edit {
             return true
         }
@@ -100,7 +101,7 @@ class EditorAdjusterView: UIView {
         return super.point(inside: point, with: event)
     }
     
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    open override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let view = super.hitTest(point, with: event)
         if view == containerView {
             if state == .normal {
@@ -126,12 +127,12 @@ class EditorAdjusterView: UIView {
     }
     
     // MARK: views
-    var containerView: ContainerView!
-    var mirrorView: UIView!
-    var rotateView: UIView!
-    var scrollView: ScrollView!
-    var contentView: EditorContentView!
-    var frameView: EditorFrameView!
+    open var containerView: ContainerView!
+    open var mirrorView: UIView!
+    open var rotateView: UIView!
+    open  var scrollView: ScrollView!
+    open var contentView: EditorContentView!
+    open var frameView: EditorFrameView!
     
     private func initViews() {
         rotateView = UIView()
@@ -1217,13 +1218,16 @@ extension EditorAdjusterView {
         return .init(top: top, left: left, bottom: bottom, right: right)
     }
      
+    open
     class ContainerView: UIView {
-        override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        open override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
             true
         }
     }
+    
+    open
     class ScrollView: UIScrollView {
-        override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        open override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
             true
         }
     }

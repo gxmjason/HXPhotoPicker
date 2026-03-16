@@ -48,6 +48,7 @@ protocol EditorContentViewDelegate: AnyObject {
     
 }
 
+open 
 class EditorContentView: UIView {
     
     weak var delegate: EditorContentViewDelegate?
@@ -345,7 +346,7 @@ class EditorContentView: UIView {
         initViews()
     }
     
-    override func layoutSubviews() {
+    open override func layoutSubviews() {
         super.layoutSubviews()
         imageView.frame = bounds
         mosaicView.frame = bounds
@@ -363,11 +364,11 @@ class EditorContentView: UIView {
     
     // MARK: SubViews
     var imageView: HXImageViewProtocol!
-    var videoView: EditorVideoPlayerView!
+    open var videoView: EditorVideoPlayerView!
     var canvasView: UIView!
     var drawView: EditorDrawView!
     var mosaicView: EditorMosaicView!
-    var stickerView: EditorStickersView!
+    open var stickerView: EditorStickersView!
     
     private func initViews() {
         imageView = PhotoManager.ImageView.init()
@@ -407,7 +408,7 @@ class EditorContentView: UIView {
         addSubview(stickerView)
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }

@@ -125,7 +125,7 @@ open class EditorView: UIScrollView {
     }
     
     //自定义属性：添加字幕时
-    var isAddWordSet: Bool = false
+    open var isAddWordSet: Bool = false
     
     // MARK: private
     var allowZoom: Bool = true
@@ -139,7 +139,7 @@ open class EditorView: UIScrollView {
     var operates: [Operate] = []
     var reloadOperates: [Operate] = []
      
-    var adjusterView: EditorAdjusterView!
+    open var adjusterView: EditorAdjusterView!
     
     // MARK: layoutViews
     open override func layoutSubviews() {

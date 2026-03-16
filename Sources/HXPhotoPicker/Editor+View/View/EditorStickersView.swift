@@ -26,6 +26,7 @@ protocol EditorStickersViewDelegate: AnyObject {
     func stickerView(resetVideoRotate stickerView: EditorStickersView)
 }
 
+open
 class EditorStickersView: UIView, EditorStickersItemViewDelegate {
     weak var delegate: EditorStickersViewDelegate?
     var scale: CGFloat = 1 {
@@ -65,12 +66,12 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
             }
         }
     }
-    var isShowTrash: Bool = true
+    open var isShowTrash: Bool = true
     var angle: CGFloat = 0
     //重要：自定义字幕
-    var isAddWordSet: Bool = false
-    var toSetBeginTime: Double = 0.0 //显示开始时刻
-    var toSetTimeDuration: Double = 1.0//显示时长（至少1秒）
+    open var isAddWordSet: Bool = false
+    open var toSetBeginTime: Double = 0.0 //显示开始时刻
+    open var toSetTimeDuration: Double = 1.0//显示时长（至少1秒）
     
     private var trashView: EditorStickersTrashView!
     private var trashViewDidRemove: Bool = false
@@ -94,7 +95,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         trashView.alpha = 0
     }
     
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    open override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         if !isEnabled {
             return nil
         }
@@ -788,7 +789,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
     }
     
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }

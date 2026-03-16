@@ -15,6 +15,7 @@ protocol EditorFrameViewDelegate: AnyObject {
     func frameView(_ frameView: EditorFrameView, didPlayButtonClick isSelected: Bool)
 }
 
+open 
 class EditorFrameView: UIView {
     weak var delegate: EditorFrameViewDelegate?
     
@@ -114,7 +115,7 @@ class EditorFrameView: UIView {
         customMaskView.frame = rect
     }
     
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    open override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         if videoSliderView.frame.contains(point), videoSliderView.alpha == 1 {
             return super.hitTest(point, with: event)
         }
@@ -132,12 +133,12 @@ class EditorFrameView: UIView {
         return nil
     }
     
-    override func layoutSubviews() {
+    open override func layoutSubviews() {
         super.layoutSubviews()
         maskLinesView.frame = bounds
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     

@@ -312,6 +312,7 @@ extension VideoEditorMusicURL: Codable {
     }
 }
 
+public
 struct EditorStickerItem: Codable {
     
     var type: EditorStickerItemType
@@ -331,11 +332,11 @@ struct EditorStickerItem: Codable {
     var frame: CGRect = .zero
     
     //添加字幕用 ID
-    var ID: String = UUID().uuidString
+    public var ID: String = UUID().uuidString
     //添加字幕用 显示开始时刻
-    var showBeginTime: Double = 0.0
+    public var showBeginTime: Double = 0.0
     //显示时长
-    var showTimeDuration: Double = 1.0
+    public var showTimeDuration: Double = 1.0
     
     init(
         _ type: EditorStickerItemType
