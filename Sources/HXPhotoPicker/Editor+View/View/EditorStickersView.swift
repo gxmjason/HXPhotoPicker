@@ -771,6 +771,7 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
         }
     }
     
+    public
     struct AudioInfo {
         let fontSizeScale: CGFloat
         let animationSizeScale: CGSize
@@ -779,19 +780,20 @@ class EditorStickersView: UIView, EditorStickersItemViewDelegate {
     
     public
     struct Info {
-        let image: UIImage?
-        let imageData: Data?
-        let isText: Bool
-        let frameScale: FrameScale
-        let angel: CGFloat
-        let mirrorScale: CGPoint
-        let scale: CGFloat
-        let viewSize: CGSize
-        let audio: AudioInfo?
+        public let image: UIImage?
+        public let imageData: Data?
+        public let isText: Bool
+        public let frameScale: FrameScale
+        public let angel: CGFloat
+        public let mirrorScale: CGPoint
+        public let scale: CGFloat
+        public let viewSize: CGSize
+        public let audio: AudioInfo?
         
+        public
         struct FrameScale {
-            let center: CGPoint
-            let size: CGSize
+            public let center: CGPoint
+            public let size: CGSize
         }
     }
     
